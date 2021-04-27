@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_trends"
+        android:icon="@drawable/baseline_trending_up_24"
+        android:title="@string/title_trends" />
+
+    <item
+        android:id="@+id/navigation_wallet"
+        android:icon="@drawable/baseline_savings_24"
+        android:title="@string/title_wallet" />
+
+    <item
+        android:id="@+id/navigation_leaderbord"
+        android:icon="@drawable/baseline_leaderboard_24"
+        android:title="@string/title_leaderboard" />
+
+</menu>
