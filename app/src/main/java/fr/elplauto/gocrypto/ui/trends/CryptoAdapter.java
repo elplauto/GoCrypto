@@ -34,7 +34,7 @@ public class CryptoAdapter extends RecyclerView.Adapter<CryptoAdapter.ViewHolder
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).
-               inflate(R.layout.crypto_raw1, parent, false);
+               inflate(R.layout.crypto_raw, parent, false);
 
         return new ViewHolder(itemView, OnCryptoClickListener);
     }
