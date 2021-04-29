@@ -1,40 +1,41 @@
-package fr.elplauto.gocrypto.model.searchAllCrypto;
+package fr.elplauto.gocrypto.model;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+public class Crypto {
 
-public class Usd {
-
-    @SerializedName("price")
-    @Expose
+    private String id;
+    private String name;
+    private String symbol;
     private Double price;
-    @SerializedName("volume_24h")
-    @Expose
-    private Double volume24h;
-    @SerializedName("percent_change_1h")
-    @Expose
     private Double percentChange1h;
-    @SerializedName("percent_change_24h")
-    @Expose
     private Double percentChange24h;
-    @SerializedName("percent_change_7d")
-    @Expose
     private Double percentChange7d;
-    @SerializedName("percent_change_30d")
-    @Expose
     private Double percentChange30d;
-    @SerializedName("percent_change_60d")
-    @Expose
     private Double percentChange60d;
-    @SerializedName("percent_change_90d")
-    @Expose
     private Double percentChange90d;
-    @SerializedName("market_cap")
-    @Expose
-    private Double marketCap;
-    @SerializedName("last_updated")
-    @Expose
-    private String lastUpdated;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getSymbol() {
+        return symbol;
+    }
+
+    public void setSymbol(String symbol) {
+        this.symbol = symbol;
+    }
 
     public Double getPrice() {
         return price;
@@ -42,14 +43,6 @@ public class Usd {
 
     public void setPrice(Double price) {
         this.price = price;
-    }
-
-    public Double getVolume24h() {
-        return volume24h;
-    }
-
-    public void setVolume24h(Double volume24h) {
-        this.volume24h = volume24h;
     }
 
     public Double getPercentChange1h() {
@@ -99,21 +92,4 @@ public class Usd {
     public void setPercentChange90d(Double percentChange90d) {
         this.percentChange90d = percentChange90d;
     }
-
-    public Double getMarketCap() {
-        return marketCap;
-    }
-
-    public void setMarketCap(Double marketCap) {
-        this.marketCap = marketCap;
-    }
-
-    public String getLastUpdated() {
-        return lastUpdated;
-    }
-
-    public void setLastUpdated(String lastUpdated) {
-        this.lastUpdated = lastUpdated;
-    }
-
 }

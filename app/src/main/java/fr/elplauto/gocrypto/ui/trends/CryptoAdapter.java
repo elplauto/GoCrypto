@@ -14,9 +14,9 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-import fr.elplauto.gocrypto.BuildConfig;
 import fr.elplauto.gocrypto.R;
-import fr.elplauto.gocrypto.model.searchAllCrypto.Crypto;
+import fr.elplauto.gocrypto.model.Crypto;
+import fr.elplauto.gocrypto.model.searchAllCrypto.DataSearchCrypto;
 
 public class CryptoAdapter extends RecyclerView.Adapter<CryptoAdapter.ViewHolder> {
 
@@ -24,10 +24,10 @@ public class CryptoAdapter extends RecyclerView.Adapter<CryptoAdapter.ViewHolder
     private OnCryptoClickListener OnCryptoClickListener;
     private Context context;
 
-    private List<Crypto> listCrypto = null;
+    private List<Crypto> cryptoList = null;
 
-    public CryptoAdapter(List<Crypto> listCrypto, OnCryptoClickListener OnCryptoClickListener, Context current) {
-        this.listCrypto = listCrypto;
+    public CryptoAdapter(List<Crypto> cryptoList, OnCryptoClickListener OnCryptoClickListener, Context current) {
+        this.cryptoList = cryptoList;
         this.OnCryptoClickListener = OnCryptoClickListener;
         this.context = current;
     }
@@ -43,15 +43,15 @@ public class CryptoAdapter extends RecyclerView.Adapter<CryptoAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Crypto crypto = listCrypto.get(position);
+        Crypto crypto = cryptoList.get(position);
         holder.textViewCryptoName.setText(crypto.getName());
         holder.textViewCryptoShortName.setText(crypto.getSymbol());
-        Double percentChange1h = crypto.getQuote().getUsd().getPercentChange1h();
+        Double percentChange1h = crypto.getPercentChange1h();
         String progressionPercent = String.format("%.03f", Math.abs(percentChange1h)) + "%";
         holder.textViewProgressionPercent.setText(progressionPercent);
-        String priceInDollar = formatPrice(crypto.getQuote().getUsd().getPrice());
+        String priceInDollar = formatPrice(crypto.getPrice());
         holder.textViewPriceInDollar.setText(priceInDollar);
-        
+
         String imgUrl = "https://s2.coinmarketcap.com/static/img/coins/64x64/"+ crypto.getId() +".png";
         Picasso.get().load(imgUrl).into(holder.imageViewIconCrypto);
 
@@ -65,7 +65,7 @@ public class CryptoAdapter extends RecyclerView.Adapter<CryptoAdapter.ViewHolder
 
     @Override
     public int getItemCount() {
-        return listCrypto.size();
+        return cryptoList.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

@@ -4,7 +4,7 @@ import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Crypto {
+public class DataSearchCrypto {
 
     @SerializedName("id")
     @Expose
@@ -47,7 +47,7 @@ public class Crypto {
     private String lastUpdated;
     @SerializedName("quote")
     @Expose
-    private Quote quote;
+    private DataSearchQuote dataSearchQuote;
 
     public Integer getId() {
         return id;
@@ -153,12 +153,12 @@ public class Crypto {
         this.lastUpdated = lastUpdated;
     }
 
-    public Quote getQuote() {
-        return quote;
+    public DataSearchQuote getDataSearchQuote() {
+        return dataSearchQuote;
     }
 
-    public void setQuote(Quote quote) {
-        this.quote = quote;
+    public void setDataSearchQuote(DataSearchQuote dataSearchQuote) {
+        this.dataSearchQuote = dataSearchQuote;
     }
 
 }

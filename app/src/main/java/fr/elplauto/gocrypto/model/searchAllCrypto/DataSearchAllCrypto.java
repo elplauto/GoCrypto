@@ -8,25 +8,25 @@ public class DataSearchAllCrypto {
 
     @SerializedName("status")
     @Expose
-    private Status status;
+    private DataSearchStatus dataSearchStatus;
     @SerializedName("data")
     @Expose
-    private List<Crypto> cryptos = null;
+    private List<DataSearchCrypto> dataSearchCryptos = null;
 
-    public Status getStatus() {
-        return status;
+    public DataSearchStatus getDataSearchStatus() {
+        return dataSearchStatus;
     }
 
-    public void setStatus(Status status) {
-        this.status = status;
+    public void setDataSearchStatus(DataSearchStatus dataSearchStatus) {
+        this.dataSearchStatus = dataSearchStatus;
     }
 
-    public List<Crypto> getCryptos() {
-        return cryptos;
+    public List<DataSearchCrypto> getDataSearchCryptos() {
+        return dataSearchCryptos;
     }
 
-    public void setCryptos(List<Crypto> cryptos) {
-        this.cryptos = cryptos;
+    public void setDataSearchCryptos(List<DataSearchCrypto> dataSearchCryptos) {
+        this.dataSearchCryptos = dataSearchCryptos;
     }
 
 }

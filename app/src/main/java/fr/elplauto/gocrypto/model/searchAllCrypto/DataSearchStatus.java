@@ -3,7 +3,7 @@ package fr.elplauto.gocrypto.model.searchAllCrypto;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Status {
+public class DataSearchStatus {
 
     @SerializedName("timestamp")
     @Expose
