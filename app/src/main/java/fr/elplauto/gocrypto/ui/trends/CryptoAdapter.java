@@ -10,6 +10,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.List;
 
 import fr.elplauto.gocrypto.BuildConfig;
@@ -49,10 +51,9 @@ public class CryptoAdapter extends RecyclerView.Adapter<CryptoAdapter.ViewHolder
         holder.textViewProgressionPercent.setText(progressionPercent);
         String priceInDollar = formatPrice(crypto.getQuote().getUsd().getPrice());
         holder.textViewPriceInDollar.setText(priceInDollar);
-
-        String variableValue = "icon_crypto_" + crypto.getId();
-        int resId = this.context.getResources().getIdentifier(variableValue, "drawable", BuildConfig.APPLICATION_ID);
-        holder.imageViewIconCrypto.setImageResource(resId);
+        
+        String imgUrl = "https://s2.coinmarketcap.com/static/img/coins/64x64/"+ crypto.getId() +".png";
+        Picasso.get().load(imgUrl).into(holder.imageViewIconCrypto);
 
         if (percentChange1h >= 0) {
             holder.imageViewUpDown.setImageResource(R.drawable.up_arrow);
