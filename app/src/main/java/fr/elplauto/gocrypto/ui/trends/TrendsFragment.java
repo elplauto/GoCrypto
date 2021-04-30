@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -38,7 +39,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoClickListener {
+public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoClickListener, ServiceCoinMarketCap.CMCCallbackListener {
 
     private static final String TAG = "TrendsFragment";
     private static final String DATABASE_NAME = "gocrypto.db";
@@ -47,7 +48,6 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
 
     private TrendsViewModel trendsViewModel;
     private RecyclerView recyclerView;
-    private List<DataSearchCrypto> dataSearchCryptos;
     final CryptoAdapter.OnCryptoClickListener onCryptoClickListener = this;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -65,14 +65,13 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
             }
         });*/
 
-        loadCryptoFromDB();
+        reloadCryptoFromCMC();
 
         return root;
     }
 
     private void reloadCryptoFromCMC() {
-        ServiceCoinMarketCap.loadAllCrypto(getContext());
-        loadCryptoFromDB();
+        ServiceCoinMarketCap.loadAllCrypto(getContext(), this);
     }
 
     private void loadCryptoFromDB() {
@@ -80,24 +79,6 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
         Log.d(TAG, dbpath);
         cryptoDB = new DBHelper(getContext());
         SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase(dbpath,  null, null);
-
-        final Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        List<Crypto> cryptoList = cryptoDB.getAllCrypto();
-                        if (cryptoList.size() > 0) {
-                            CryptoAdapter mAdapter = new CryptoAdapter(cryptoList, onCryptoClickListener, getContext());
-                            recyclerView.setAdapter(mAdapter);
-                            timer.cancel();
-                        }
-                    }
-                });
-            }
-        }, 0, 1000);
     }
 
     @Override
@@ -106,5 +87,14 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
     }
 
 
-
+    @Override
+    public void onCallback(final List<Crypto> cryptoList) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                CryptoAdapter mAdapter = new CryptoAdapter(cryptoList, onCryptoClickListener, getContext());
+                recyclerView.setAdapter(mAdapter);
+            }
+        });
+    }
 }
