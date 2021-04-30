@@ -47,7 +47,7 @@ public class CryptoAdapter extends RecyclerView.Adapter<CryptoAdapter.ViewHolder
         holder.textViewCryptoName.setText(crypto.getName());
         holder.textViewCryptoShortName.setText(crypto.getSymbol());
         Double percentChange1h = crypto.getPercentChange1h();
-        String progressionPercent = String.format("%.03f", Math.abs(percentChange1h)) + "%";
+        String progressionPercent = String.format("%.02f", Math.abs(percentChange1h)) + "%";
         holder.textViewProgressionPercent.setText(progressionPercent);
         String priceInDollar = formatPrice(crypto.getPrice());
         holder.textViewPriceInDollar.setText(priceInDollar);
