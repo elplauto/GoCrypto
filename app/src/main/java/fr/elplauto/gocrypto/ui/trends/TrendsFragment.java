@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.util.List;
 
@@ -25,6 +26,7 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
     private TrendsViewModel trendsViewModel;
     private RecyclerView recyclerView;
     final CryptoAdapter.OnCryptoClickListener onCryptoClickListener = this;
+    private SwipeRefreshLayout swipeContainer;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         trendsViewModel = ViewModelProviders.of(this).get(TrendsViewModel.class);
@@ -40,6 +42,14 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
                 textView.setText(s);
             }
         });*/
+
+        swipeContainer = (SwipeRefreshLayout) root.findViewById(R.id.swipeContainer);
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                loadCryptoFromCMC();
+            }
+        });
 
         dbManager = new DBManager(getContext());
         loadCryptoFromDB();
@@ -70,6 +80,7 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
             public void run() {
                 CryptoAdapter mAdapter = new CryptoAdapter(cryptoList, onCryptoClickListener, getContext());
                 recyclerView.setAdapter(mAdapter);
+                swipeContainer.setRefreshing(false);
                 dbManager.replaceCryptoList(cryptoList);
             }
         });
