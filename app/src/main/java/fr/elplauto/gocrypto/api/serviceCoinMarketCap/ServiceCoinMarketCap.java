@@ -1,7 +1,6 @@
 package fr.elplauto.gocrypto.api.serviceCoinMarketCap;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -13,12 +12,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.elplauto.gocrypto.database.DBHelper;
 import fr.elplauto.gocrypto.model.Crypto;
 import fr.elplauto.gocrypto.model.searchAllCrypto.DataSearchAllCrypto;
 import fr.elplauto.gocrypto.model.searchAllCrypto.DataSearchCrypto;
 import fr.elplauto.gocrypto.model.searchAllCrypto.DataSearchUsd;
-import fr.elplauto.gocrypto.ui.trends.TrendsFragment;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -29,15 +26,7 @@ public class ServiceCoinMarketCap {
 
     private static final String TAG = "ServiceCoinMarketCap";
     private static String apiKey = "8005261d-3361-4dd5-8b6b-4ff540e046d9";
-    private static final String DATABASE_NAME = "gocrypto.db";
-    private static DBHelper cryptoDB;
     public static void loadAllCrypto(Context context, final CMCCallbackListener cmcCallbackListener) {
-
-        String dbpath = context.getDatabasePath(DATABASE_NAME).getPath();
-        Log.d(TAG, dbpath);
-        cryptoDB = new DBHelper(context);
-        SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase(dbpath,  null, null);
-        cryptoDB.onUpgrade(db,0,0);
 
         OkHttpClient client = new OkHttpClient();
         String url = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest";
@@ -60,19 +49,12 @@ public class ServiceCoinMarketCap {
                     Gson gson = new Gson();
                     DataSearchAllCrypto dataSearchAllCrypto = gson.fromJson(json.toString(), DataSearchAllCrypto.class);
                     List<Crypto> cryptoList = dataSearchCryptoToCrypto(dataSearchAllCrypto.getDataSearchCryptos());
-                    addCryptoToDB(cryptoList);
-                    cmcCallbackListener.onCallback(cryptoList);
+                    cmcCallbackListener.onCMCCallback(cryptoList);
                 } catch (JSONException | IOException e) {
                     e.printStackTrace();
                 }
             }
         });
-    }
-
-    private static void addCryptoToDB(List<Crypto> cryptoList) {
-        for (Crypto crypto : cryptoList) {
-            cryptoDB.insertCrypto(crypto);
-        }
     }
 
     private static List<Crypto> dataSearchCryptoToCrypto (List<DataSearchCrypto> dataSearchCryptoList) {
@@ -96,6 +78,6 @@ public class ServiceCoinMarketCap {
     }
 
     public interface CMCCallbackListener {
-        void onCallback(List<Crypto> cryptoList);
+        void onCMCCallback(List<Crypto> cryptoList);
     }
 }
