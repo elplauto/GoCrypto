@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import fr.elplauto.gocrypto.R;
@@ -35,6 +36,7 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
     private RecyclerView recyclerView;
     final CryptoAdapter.OnCryptoClickListener onCryptoClickListener = this;
     private SwipeRefreshLayout swipeContainer;
+    private List<Crypto> cryptoList;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         trendsViewModel = ViewModelProviders.of(this).get(TrendsViewModel.class);
@@ -79,12 +81,16 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
             @Override
             public boolean onQueryTextSubmit(String query) {
                 Log.d(TAG, "onQueryTextSubmit:" + query);
+
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
                 Log.d(TAG, "onQueryTextChange:" + newText);
+                List<Crypto> filteredCryptoList = filterCryptoList(newText);
+                CryptoAdapter mAdapter = new CryptoAdapter(filteredCryptoList, onCryptoClickListener, getContext());
+                recyclerView.setAdapter(mAdapter);
                 return false;
             }
         });
@@ -104,7 +110,7 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
     }
 
     private void loadCryptoFromDB() {
-        List<Crypto> cryptoList = dbManager.getAllCrypto();
+        cryptoList = dbManager.getAllCrypto();
         CryptoAdapter mAdapter = new CryptoAdapter(cryptoList, onCryptoClickListener, getContext());
         recyclerView.setAdapter(mAdapter);
     }
@@ -117,6 +123,7 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
 
     @Override
     public void onCMCCallback(final List<Crypto> cryptoList) {
+        this.cryptoList = cryptoList;
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -126,5 +133,15 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
                 dbManager.replaceCryptoList(cryptoList);
             }
         });
+    }
+
+    private List<Crypto> filterCryptoList(String filter) {
+        List<Crypto> filteredList = new ArrayList<>();
+        for (Crypto crypto : cryptoList) {
+            if (crypto.getName().toLowerCase().contains(filter.toLowerCase())) {
+                filteredList.add(crypto);
+            }
+        }
+        return filteredList;
     }
 }
