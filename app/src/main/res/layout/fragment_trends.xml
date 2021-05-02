@@ -16,16 +16,85 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:title="@string/title_trends"
-            android:theme="@style/MyThemeOverlay_Toolbar" />
+            android:theme="@style/MyThemeOverlay_Toolbar"
+            app:title="@string/title_trends" />
 
     </com.google.android.material.appbar.AppBarLayout>
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:scrollbars="none"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/back_text"
+                android:padding="8dp"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#000000"
+                    android:textStyle="bold"
+                    android:text="Sort by Name" />
+
+                <ImageView
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/baseline_arrow_upward_24"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"
+                android:padding="8dp"
+                android:background="@drawable/back_text"
+                android:textColor="#000000"
+                android:textStyle="bold"
+                android:text="%(1h)" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"
+                android:padding="8dp"
+                android:background="@drawable/back_text"
+                android:textColor="#000000"
+                android:textStyle="bold"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:text="All Cryptocurrencies"
+                 />
+
+
+
+        </LinearLayout>
+
+    </HorizontalScrollView>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeContainer"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_marginBottom="?android:attr/actionBarSize"
-        android:layout_marginTop="?android:attr/actionBarSize"
+        android:layout_marginTop="@dimen/twiceActionBarSize"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
