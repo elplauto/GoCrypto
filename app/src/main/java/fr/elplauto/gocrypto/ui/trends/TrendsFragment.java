@@ -9,6 +9,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,6 +22,8 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +45,7 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         trendsViewModel = ViewModelProviders.of(this).get(TrendsViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_trends, container, false);
+        final View root = inflater.inflate(R.layout.fragment_trends, container, false);
 
         Toolbar toolbar = root.findViewById(R.id.toolbar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
@@ -64,6 +69,20 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
                 loadCryptoFromCMC();
             }
         });
+
+        TextView sortTextView = root.findViewById(R.id.sortTextView);
+        sortTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getContext());
+                View bottomSheetView = LayoutInflater.from(getContext()).inflate(R.layout.bottom_action_sheet_sort_crypto, (LinearLayout)root.findViewById(R.id.bottomSheetContainer));
+                bottomSheetDialog.setContentView(bottomSheetView);
+                bottomSheetDialog.show();
+            }
+        });
+        ImageView sortArrowImageView = root.findViewById(R.id.sortArrowImageView);
+        TextView displayPercentTextView = root.findViewById(R.id.displayPercentTextView);
+        TextView allCryptoTextView = root.findViewById(R.id.allCryptoTextView);
 
         dbManager = new DBManager(getContext());
         loadCryptoFromDB();
