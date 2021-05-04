@@ -29,7 +29,7 @@ public class ServiceCoinMarketCap {
     public static void loadAllCrypto(Context context, final CMCCallbackListener cmcCallbackListener) {
 
         OkHttpClient client = new OkHttpClient();
-        String url = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest";
+        String url = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?limit=200";
         Log.d(TAG, "loadAllCrypto url : " + url);
 
         Request request = new Request.Builder().url(url).addHeader("X-CMC_PRO_API_KEY", apiKey).build();

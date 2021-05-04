@@ -3,4 +3,5 @@
     <string name="title_trends">Trends</string>
     <string name="title_wallet">Wallet</string>
     <string name="title_leaderboard">Leaderboard</string>
+    <string name="preference_file_key">fr.elplauto.gocrypto.PREFERENCES</string>
 </resources>

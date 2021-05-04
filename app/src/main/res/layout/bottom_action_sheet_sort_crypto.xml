@@ -15,36 +15,91 @@
         android:textColor="#000000"
         android:text="Sort By" />
 
-    <TextView
+    <LinearLayout
+        android:id="@+id/percentChangeLinearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingLeft="16dp"
         android:paddingStart="16dp"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
-        android:textColor="#000000"
-        android:text="% Change"/>
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
-    <TextView
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#000000"
+            android:text="% Change"/>
+
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginLeft="10dp"
+            android:src="@drawable/baseline_arrow_upward_24" />
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/baseline_arrow_downward_24" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/priceLinearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingLeft="16dp"
         android:paddingStart="16dp"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
-        android:textColor="#000000"
-        android:text="Price"/>
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
-    <TextView
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#000000"
+            android:text="Price"/>
+
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginLeft="10dp"
+            android:src="@drawable/baseline_arrow_upward_24" />
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/baseline_arrow_downward_24" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/nameLinearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingLeft="16dp"
         android:paddingStart="16dp"
         android:paddingTop="10dp"
-        android:paddingBottom="20dp"
-        android:textColor="#000000"
-        android:text="Name"/>
+        android:paddingBottom="10dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#000000"
+            android:text="Name"/>
 
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginLeft="10dp"
+            android:src="@drawable/baseline_arrow_upward_24" />
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/baseline_arrow_downward_24" />
+
+    </LinearLayout>
 
 </LinearLayout>
