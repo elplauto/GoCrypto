@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/bottomSheetPercentageContainer">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="16dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:background="@color/colorPrimary"
+        android:textColor="#000000"
+        android:text="% Change Time" />
+
+    <TextView
+        android:id="@+id/percentChange1h"
+        android:paddingStart="16dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#000000"
+        android:text="1 hour"/>
+
+    <TextView
+        android:id="@+id/percentChange24h"
+        android:paddingStart="16dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#000000"
+        android:text="24 hours"/>
+
+    <TextView
+        android:id="@+id/percentChange7d"
+        android:paddingStart="16dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#000000"
+        android:text="7 days"/>
+
+    <TextView
+        android:id="@+id/percentChange30d"
+        android:paddingStart="16dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#000000"
+        android:text="30 days"/>
+
+    <TextView
+        android:id="@+id/percentChange60d"
+        android:paddingStart="16dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#000000"
+        android:text="60 days"/>
+
+    <TextView
+        android:id="@+id/percentChange90d"
+        android:paddingStart="16dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#000000"
+        android:text="90 days"/>
+
+</LinearLayout>

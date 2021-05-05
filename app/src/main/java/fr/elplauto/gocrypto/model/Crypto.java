@@ -92,4 +92,23 @@ public class Crypto {
     public void setPercentChange90d(Double percentChange90d) {
         this.percentChange90d = percentChange90d;
     }
+
+    public Double getPercentChange(String time) {
+        switch (time) {
+            case "1h":
+                return this.getPercentChange1h();
+            case "24h":
+                return this.getPercentChange24h();
+            case "7d":
+                return this.getPercentChange7d();
+            case "30d":
+                return this.getPercentChange30d();
+            case "60d":
+                return this.getPercentChange60d();
+            case "90d":
+                return this.getPercentChange90d();
+            default:
+                return 0d;
+        }
+    }
 }

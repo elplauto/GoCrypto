@@ -23,13 +23,14 @@ public class CryptoAdapter extends RecyclerView.Adapter<CryptoAdapter.ViewHolder
     private static final String TAG = "CryptoAdapter";
     private OnCryptoClickListener OnCryptoClickListener;
     private Context context;
-
+    private String percentChangePreference;
     private List<Crypto> cryptoList = null;
 
-    public CryptoAdapter(List<Crypto> cryptoList, OnCryptoClickListener OnCryptoClickListener, Context current) {
+    public CryptoAdapter(List<Crypto> cryptoList, OnCryptoClickListener OnCryptoClickListener, Context current, String percentChangePreference) {
         this.cryptoList = cryptoList;
         this.OnCryptoClickListener = OnCryptoClickListener;
         this.context = current;
+        this.percentChangePreference = percentChangePreference;
     }
 
     @NonNull
@@ -46,7 +47,8 @@ public class CryptoAdapter extends RecyclerView.Adapter<CryptoAdapter.ViewHolder
         Crypto crypto = cryptoList.get(position);
         holder.textViewCryptoName.setText(crypto.getName());
         holder.textViewCryptoShortName.setText(crypto.getSymbol());
-        Double percentChange1h = crypto.getPercentChange1h();
+
+        Double percentChange1h = crypto.getPercentChange(this.percentChangePreference);
         String progressionPercent = String.format("%.02f", Math.abs(percentChange1h)) + "%";
         holder.textViewProgressionPercent.setText(progressionPercent);
         String priceInDollar = formatPrice(crypto.getPrice());

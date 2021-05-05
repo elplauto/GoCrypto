@@ -163,6 +163,100 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
         updateSortArrowImage();
 
         displayPercentTextView = root.findViewById(R.id.displayPercentTextView);
+        displayPercentTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getContext());
+                View bottomSheetView = LayoutInflater.from(getContext()).inflate(R.layout.bottom_action_sheet_choose_percentage, (LinearLayout)root.findViewById(R.id.bottomSheetContainer));
+                bottomSheetDialog.setContentView(bottomSheetView);
+
+                String percentChangePreference = getContext().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE).getString("percentChange", "1h");
+
+                int colorBlue = ContextCompat.getColor(getContext(), R.color.blue);
+                int textToColor = 0;
+                switch (percentChangePreference) {
+                    case "1h":
+                        textToColor = R.id.percentChange1h;
+                        break;
+                    case "24h":
+                        textToColor = R.id.percentChange24h;
+                        break;
+                    case "7d":
+                        textToColor = R.id.percentChange7d;
+                        break;
+                    case "30d":
+                        textToColor = R.id.percentChange30d;
+                        break;
+                    case "60d":
+                        textToColor = R.id.percentChange60d;
+                        break;
+                    case "90d":
+                        textToColor = R.id.percentChange90d;
+                        break;
+                }
+                ((TextView) bottomSheetView.findViewById(textToColor)).setTextColor(colorBlue);
+
+                TextView percentChange1h = bottomSheetDialog.findViewById(R.id.percentChange1h);
+                percentChange1h.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        updatePercentDisplayPreference("1h");
+                        displayCryptoList(applyAllFiltersToList(cryptoList));
+                        bottomSheetDialog.dismiss();
+                    }
+                });
+                TextView percentChange24h = bottomSheetDialog.findViewById(R.id.percentChange24h);
+                percentChange24h.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        updatePercentDisplayPreference("24h");
+                        displayCryptoList(applyAllFiltersToList(cryptoList));
+                        bottomSheetDialog.dismiss();
+                    }
+                });
+                TextView percentChange7d = bottomSheetDialog.findViewById(R.id.percentChange7d);
+                percentChange7d.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        updatePercentDisplayPreference("7d");
+                        displayCryptoList(applyAllFiltersToList(cryptoList));
+                        bottomSheetDialog.dismiss();
+                    }
+                });
+                TextView percentChange30d = bottomSheetDialog.findViewById(R.id.percentChange30d);
+                percentChange30d.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        updatePercentDisplayPreference("30d");
+                        displayCryptoList(applyAllFiltersToList(cryptoList));
+                        bottomSheetDialog.dismiss();
+                    }
+                });
+                TextView percentChange60d = bottomSheetDialog.findViewById(R.id.percentChange60d);
+                percentChange60d.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        updatePercentDisplayPreference("60d");
+                        displayCryptoList(applyAllFiltersToList(cryptoList));
+                        bottomSheetDialog.dismiss();
+                    }
+                });
+                TextView percentChange90d = bottomSheetDialog.findViewById(R.id.percentChange90d);
+                percentChange90d.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        updatePercentDisplayPreference("90d");
+                        displayCryptoList(applyAllFiltersToList(cryptoList));
+                        bottomSheetDialog.dismiss();
+                    }
+                });
+
+                bottomSheetDialog.show();
+
+            }
+        });
+        updatePercentChangeTextView();
+
         allCryptoTextView = root.findViewById(R.id.allCryptoTextView);
 
         dbManager = new DBManager(getContext());
@@ -201,7 +295,8 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
     }
 
     private void displayCryptoList(List<Crypto> cryptoList) {
-        CryptoAdapter mAdapter = new CryptoAdapter(cryptoList, onCryptoClickListener, getContext());
+        String percentChangePreference = getContext().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE).getString("percentChange", "1h");
+        CryptoAdapter mAdapter = new CryptoAdapter(cryptoList, onCryptoClickListener, getContext(), percentChangePreference);
         recyclerView.setAdapter(mAdapter);
     }
 
@@ -242,6 +337,7 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
         SortCryptoCriteriaEnum criteria = SortCryptoCriteriaEnum.valueOf(sortCriteria);
         int sortDirection = getContext().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE).getInt("sortDirection", 1);
         SortCryptoDirectionEnum direction = SortCryptoDirectionEnum.valueOf(sortDirection);
+        final String percentChangePreference = getContext().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE).getString("percentChange", "1h");
 
         if (criteria == SortCryptoCriteriaEnum.NAME) {
             if (direction == SortCryptoDirectionEnum.ASC) {
@@ -284,7 +380,7 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
                 cryptoList.sort(new Comparator<Crypto>() {
                     @Override
                     public int compare(Crypto o1, Crypto o2) {
-                        Double diff = (o2.getPercentChange1h() - o1.getPercentChange1h());
+                        Double diff = (o2.getPercentChange(percentChangePreference) - o1.getPercentChange(percentChangePreference));
                         return diff.compareTo(0d);
                     }
                 });
@@ -293,7 +389,7 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
                 cryptoList.sort(new Comparator<Crypto>() {
                     @Override
                     public int compare(Crypto o1, Crypto o2) {
-                        Double diff = (o1.getPercentChange1h() - o2.getPercentChange1h());
+                        Double diff = (o1.getPercentChange(percentChangePreference) - o2.getPercentChange(percentChangePreference));
                         return diff.compareTo(0d);
                     }
                 });
@@ -372,5 +468,38 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
             text = "Sort by %";
         }
         sortTextView.setText(text);
+    }
+
+    private void updatePercentDisplayPreference(String newPercentChange) {
+        SharedPreferences.Editor editor = getContext().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE).edit();
+        editor.putString("percentChange", newPercentChange);
+        editor.apply();
+        updatePercentChangeTextView();
+    }
+
+    private void updatePercentChangeTextView() {
+        String text = "";
+        String percentChangePreference = getContext().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE).getString("percentChange", "1h");
+        switch (percentChangePreference) {
+            case "1h":
+                text = "%(1h)";
+                break;
+            case "24h":
+                text = "%(24h)";
+                break;
+            case "7d":
+                text = "%(7d)";
+                break;
+            case "30d":
+                text = "%(30d)";
+                break;
+            case "60d":
+                text = "%(60d)";
+                break;
+            case "90d":
+                text = "%(90d)";
+                break;
+        }
+        displayPercentTextView.setText(text);
     }
 }
