@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -86,7 +87,38 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
                 final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getContext());
                 View bottomSheetView = LayoutInflater.from(getContext()).inflate(R.layout.bottom_action_sheet_sort_crypto, (LinearLayout)root.findViewById(R.id.bottomSheetContainer));
                 bottomSheetDialog.setContentView(bottomSheetView);
-                bottomSheetDialog.show();
+
+                int sortCriteria = getContext().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE).getInt("sortCriteria", 1);
+                int sortDirection = getContext().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE).getInt("sortDirection", 1);
+
+                int colorBlue = ContextCompat.getColor(getContext(), R.color.blue);
+                int textToColor = 0, imgUp = 0, imgDown = 0;
+
+                if (sortCriteria == SortCryptoCriteriaEnum.NAME.getValue()) {
+                    textToColor = R.id.nameText;
+                    imgUp = R.id.imgUpName;
+                    imgDown = R.id.imgDownName;
+                } else if (sortCriteria == SortCryptoCriteriaEnum.PRICE.getValue()) {
+                    textToColor = R.id.priceText;
+                    imgUp = R.id.imgUpPrice;
+                    imgDown = R.id.imgDownPrice;
+                } else if (sortCriteria == SortCryptoCriteriaEnum.PERCENT_CHANGE.getValue()) {
+                    textToColor = R.id.percentChangeText;
+                    imgUp = R.id.imgUpPercentChange;
+                    imgDown = R.id.imgDownPercentChange;
+                }
+
+                ((TextView) bottomSheetView.findViewById(textToColor)).setTextColor(colorBlue);
+
+                ImageView imgViewUp = bottomSheetView.findViewById(imgUp);
+                ImageView imgViewDown = bottomSheetView.findViewById(imgDown);
+                imgViewUp.setVisibility(View.VISIBLE);
+                imgViewDown.setVisibility(View.VISIBLE);
+                if (sortDirection == SortCryptoDirectionEnum.ASC.getValue()) {
+                    imgViewDown.setColorFilter(colorBlue);
+                } else {
+                    imgViewUp.setColorFilter(colorBlue);
+                }
 
                 LinearLayout percentChangeLinearLayout = bottomSheetDialog.findViewById(R.id.percentChangeLinearLayout);
                 percentChangeLinearLayout.setOnClickListener(new View.OnClickListener() {
@@ -115,6 +147,8 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
                         bottomSheetDialog.dismiss();
                     }
                 });
+
+                bottomSheetDialog.show();
             }
         });
         updateSortTextView();
@@ -324,6 +358,7 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
         int direction = getContext().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE).getInt("sortDirection", 1);
         int arrowId = direction == SortCryptoDirectionEnum.ASC.getValue() ? R.drawable.baseline_arrow_downward_24 : R.drawable.baseline_arrow_upward_24;
         sortArrowImageView.setImageResource(arrowId);
+        sortArrowImageView.setColorFilter(ContextCompat.getColor(getContext(), R.color.blue));
     }
 
     private void updateSortTextView() {

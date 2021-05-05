@@ -27,20 +27,25 @@
         android:orientation="horizontal">
 
         <TextView
+            android:id="@+id/percentChangeText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#000000"
             android:text="% Change"/>
 
         <ImageView
+            android:id="@+id/imgUpPercentChange"
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:layout_marginLeft="10dp"
-            android:src="@drawable/baseline_arrow_upward_24" />
+            android:src="@drawable/baseline_arrow_upward_24"
+            android:visibility="invisible"/>
         <ImageView
+            android:id="@+id/imgDownPercentChange"
             android:layout_width="16dp"
             android:layout_height="16dp"
-            android:src="@drawable/baseline_arrow_downward_24" />
+            android:src="@drawable/baseline_arrow_downward_24"
+            android:visibility="invisible"/>
 
     </LinearLayout>
 
@@ -56,20 +61,25 @@
         android:orientation="horizontal">
 
         <TextView
+            android:id="@+id/priceText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#000000"
             android:text="Price"/>
 
         <ImageView
+            android:id="@+id/imgUpPrice"
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:layout_marginLeft="10dp"
-            android:src="@drawable/baseline_arrow_upward_24" />
+            android:src="@drawable/baseline_arrow_upward_24"
+            android:visibility="invisible"/>
         <ImageView
+            android:id="@+id/imgDownPrice"
             android:layout_width="16dp"
             android:layout_height="16dp"
-            android:src="@drawable/baseline_arrow_downward_24" />
+            android:src="@drawable/baseline_arrow_downward_24"
+            android:visibility="invisible"/>
 
     </LinearLayout>
 
@@ -85,20 +95,25 @@
         android:orientation="horizontal">
 
         <TextView
+            android:id="@+id/nameText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#000000"
             android:text="Name"/>
 
         <ImageView
+            android:id="@+id/imgUpName"
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:layout_marginLeft="10dp"
-            android:src="@drawable/baseline_arrow_upward_24" />
+            android:src="@drawable/baseline_arrow_upward_24"
+            android:visibility="invisible"/>
         <ImageView
+            android:id="@+id/imgDownName"
             android:layout_width="16dp"
             android:layout_height="16dp"
-            android:src="@drawable/baseline_arrow_downward_24" />
+            android:src="@drawable/baseline_arrow_downward_24"
+            android:visibility="invisible"/>
 
     </LinearLayout>
 
