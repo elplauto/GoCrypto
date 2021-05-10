@@ -32,13 +32,13 @@ import java.util.Comparator;
 import java.util.List;
 
 import fr.elplauto.gocrypto.R;
-import fr.elplauto.gocrypto.api.serviceCoinMarketCap.ServiceCoinMarketCap;
+import fr.elplauto.gocrypto.api.cryptoService.CryptoService;
 import fr.elplauto.gocrypto.database.DBManager;
 import fr.elplauto.gocrypto.model.Crypto;
 import fr.elplauto.gocrypto.model.SortCryptoCriteriaEnum;
 import fr.elplauto.gocrypto.model.SortCryptoDirectionEnum;
 
-public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoClickListener, ServiceCoinMarketCap.CMCCallbackListener {
+public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoClickListener, CryptoService.CryptoServiceCallbackListener {
 
     private static final String TAG = "TrendsFragment";
     private DBManager dbManager;
@@ -301,7 +301,7 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
     }
 
     private void loadCryptoFromCMC() {
-        ServiceCoinMarketCap.loadAllCrypto(getContext(), this);
+        CryptoService.loadAllCrypto(getContext(), this);
     }
 
     private void loadCryptoFromDB() {
@@ -313,21 +313,6 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
     @Override
     public void onCryptoClick(int position) {
 
-    }
-
-
-    @Override
-    public void onCMCCallback(final List<Crypto> cryptoList) {
-        this.cryptoList = cryptoList;
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                List<Crypto> filteredList = applyAllFiltersToList(cryptoList);
-                displayCryptoList(filteredList);
-                swipeContainer.setRefreshing(false);
-                dbManager.replaceCryptoList(cryptoList);
-            }
-        });
     }
 
     private List<Crypto> sortCryptoList(List<Crypto> cryptoList) {
@@ -501,5 +486,19 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
                 break;
         }
         displayPercentTextView.setText(text);
+    }
+
+    @Override
+    public void onCryptoServiceCallback(final List<Crypto> cryptoList) {
+        this.cryptoList = cryptoList;
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                List<Crypto> filteredList = applyAllFiltersToList(cryptoList);
+                displayCryptoList(filteredList);
+                swipeContainer.setRefreshing(false);
+                dbManager.replaceCryptoList(cryptoList);
+            }
+        });
     }
 }

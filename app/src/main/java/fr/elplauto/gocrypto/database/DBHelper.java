@@ -9,10 +9,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import fr.elplauto.gocrypto.model.Crypto;
-import fr.elplauto.gocrypto.model.searchAllCrypto.DataSearchCrypto;
 
 public class DBHelper extends SQLiteOpenHelper {
 
@@ -104,7 +102,7 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(CRYPTO_COLUMN_CHANGE_30D, crypto.getPercentChange30d());
         contentValues.put(CRYPTO_COLUMN_CHANGE_60D, crypto.getPercentChange60d());
         contentValues.put(CRYPTO_COLUMN_CHANGE_90D, crypto.getPercentChange90d());
-        db.update(CRYPTO_TABLE_NAME, contentValues, "id = ? ", new String[] { crypto.getId() } );
+        db.update(CRYPTO_TABLE_NAME, contentValues, "id = ? ", new String[] { crypto.getId()+"" } );
         return true;
     }
 
@@ -124,7 +122,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
         while(!res.isAfterLast()){
             Crypto crypto = new Crypto();
-            crypto.setId(res.getString(res.getColumnIndex(CRYPTO_COLUMN_ID_CRYPTO)));
+            crypto.setId(res.getInt(res.getColumnIndex(CRYPTO_COLUMN_ID_CRYPTO)));
             crypto.setName(res.getString(res.getColumnIndex(CRYPTO_COLUMN_NAME)));
             crypto.setSymbol(res.getString(res.getColumnIndex(CRYPTO_COLUMN_SYMBOL)));
             crypto.setPrice(res.getDouble(res.getColumnIndex(CRYPTO_COLUMN_PRICE)));

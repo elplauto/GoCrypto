@@ -1,23 +1,50 @@
 package fr.elplauto.gocrypto.model;
 
+import java.util.List;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 public class Crypto {
 
-    private String id;
+    @SerializedName("id")
+    @Expose
+    private Integer id;
+    @SerializedName("name")
+    @Expose
     private String name;
+    @SerializedName("symbol")
+    @Expose
     private String symbol;
+    @SerializedName("price")
+    @Expose
     private Double price;
+    @SerializedName("priceHistory")
+    @Expose
+    private List<PriceHistory> priceHistory = null;
+    @SerializedName("percentChange1h")
+    @Expose
     private Double percentChange1h;
+    @SerializedName("percentChange24h")
+    @Expose
     private Double percentChange24h;
+    @SerializedName("percentChange7d")
+    @Expose
     private Double percentChange7d;
+    @SerializedName("percentChange30d")
+    @Expose
     private Double percentChange30d;
+    @SerializedName("percentChange60d")
+    @Expose
     private Double percentChange60d;
+    @SerializedName("percentChange90d")
+    @Expose
     private Double percentChange90d;
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -43,6 +70,14 @@ public class Crypto {
 
     public void setPrice(Double price) {
         this.price = price;
+    }
+
+    public List<PriceHistory> getPriceHistory() {
+        return priceHistory;
+    }
+
+    public void setPriceHistory(List<PriceHistory> priceHistory) {
+        this.priceHistory = priceHistory;
     }
 
     public Double getPercentChange1h() {

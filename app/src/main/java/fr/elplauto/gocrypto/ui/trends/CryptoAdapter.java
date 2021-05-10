@@ -16,7 +16,6 @@ import java.util.List;
 
 import fr.elplauto.gocrypto.R;
 import fr.elplauto.gocrypto.model.Crypto;
-import fr.elplauto.gocrypto.model.searchAllCrypto.DataSearchCrypto;
 
 public class CryptoAdapter extends RecyclerView.Adapter<CryptoAdapter.ViewHolder> {
 
