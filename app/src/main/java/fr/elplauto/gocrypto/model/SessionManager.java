@@ -38,7 +38,6 @@ public class SessionManager {
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(i);
-        Toast.makeText(context, "Connected as " + username, Toast.LENGTH_LONG).show();
     }
 
     public void logout() {

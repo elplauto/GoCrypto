@@ -32,7 +32,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import fr.elplauto.gocrypto.R;
-import fr.elplauto.gocrypto.api.cryptoService.CryptoService;
+import fr.elplauto.gocrypto.api.CryptoService;
 import fr.elplauto.gocrypto.database.DBManager;
 import fr.elplauto.gocrypto.model.Crypto;
 import fr.elplauto.gocrypto.model.SortCryptoCriteriaEnum;

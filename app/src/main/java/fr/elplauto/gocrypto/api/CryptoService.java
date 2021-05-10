@@ -1,4 +1,4 @@
-package fr.elplauto.gocrypto.api.cryptoService;
+package fr.elplauto.gocrypto.api;
 
 import android.content.Context;
 import android.util.Log;

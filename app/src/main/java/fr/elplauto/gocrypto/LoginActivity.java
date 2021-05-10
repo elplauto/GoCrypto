@@ -11,15 +11,21 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.List;
+
+import fr.elplauto.gocrypto.api.LoginService;
+import fr.elplauto.gocrypto.model.Crypto;
+import fr.elplauto.gocrypto.model.LoginStatus;
 import fr.elplauto.gocrypto.model.SessionManager;
 
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements LoginService.LoginServiceCallbackListener {
 
     EditText usernameEditText;
     EditText pwdEditText;
     SessionManager sessionManager;
     Button loginBtn;
+    LoginService.LoginServiceCallbackListener self = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,15 +73,9 @@ public class LoginActivity extends AppCompatActivity {
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //check if username exists
-                String username = usernameEditText.getText().toString();
-                String password = pwdEditText.getText().toString();
-                boolean usernameExists = false;
-                if (usernameExists) {
-                    //check password
-                } else {
-                    sessionManager.createLoginSession(username);
-                }
+            String username = usernameEditText.getText().toString();
+            String password = pwdEditText.getText().toString();
+            LoginService.loginOrRegister(self, username, password);
             }
         });
 
@@ -86,4 +86,17 @@ public class LoginActivity extends AppCompatActivity {
         loginBtn.setEnabled(enable);
     }
 
+    @Override
+    public void onLoginServiceCallback(LoginStatus loginStatus) {
+        if (loginStatus.getIsLoggedIn()) {
+            sessionManager.createLoginSession(loginStatus.getUsername());
+        } else {
+            LoginActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(getApplicationContext(), "Incorrect password", Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+    }
 }
