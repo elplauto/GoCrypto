@@ -46,6 +46,10 @@ public class SessionManager {
         editor.commit();
     }
 
+    public String getUsername() {
+        return pref.getString("username", "");
+    }
+
     public boolean isLoggedIn() {
         return pref.getBoolean("isLoggedIn", false);
     }

@@ -28,6 +28,9 @@ public class AccountFragment extends Fragment {
 
         final SessionManager sessionManager = SessionManager.getInstance(getContext());
 
+        TextView usernameText = root.findViewById(R.id.usernameAccount);
+        usernameText.setText(sessionManager.getUsername());
+
         Button logoutBtn = root.findViewById(R.id.logout);
         logoutBtn.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -12,7 +12,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Currency;
 import java.util.List;
+import java.util.Locale;
 
 import fr.elplauto.gocrypto.R;
 import fr.elplauto.gocrypto.model.Crypto;
@@ -46,7 +50,6 @@ public class CryptoAdapter extends RecyclerView.Adapter<CryptoAdapter.ViewHolder
         Crypto crypto = cryptoList.get(position);
         holder.textViewCryptoName.setText(crypto.getName());
         holder.textViewCryptoShortName.setText(crypto.getSymbol());
-
         Double percentChange1h = crypto.getPercentChange(this.percentChangePreference);
         String progressionPercent = String.format("%.02f", Math.abs(percentChange1h)) + "%";
         holder.textViewProgressionPercent.setText(progressionPercent);
@@ -103,14 +106,17 @@ public class CryptoAdapter extends RecyclerView.Adapter<CryptoAdapter.ViewHolder
     }
 
     private String formatPrice(Double price) {
-        String priceFormatted = null;
+        String priceDecimalReduced = null;
         if (price < 1) {
-            priceFormatted = String.format("%.04f", price);
+            priceDecimalReduced = String.format("%.04f", price);
         } else if (price < 10) {
-            priceFormatted = String.format("%.03f", price);
+            priceDecimalReduced = String.format("%.03f", price);
         } else {
-            priceFormatted = String.format("%.02f", price);
+            priceDecimalReduced = String.format("%.02f", price);
         }
-        return "$" + priceFormatted;
+
+        NumberFormat format = NumberFormat.getCurrencyInstance(Locale.US);
+        format.setCurrency(Currency.getInstance("USD"));
+        return format.format(Double.valueOf(priceDecimalReduced));
     }
 }
