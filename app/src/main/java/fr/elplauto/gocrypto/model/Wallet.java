@@ -1,34 +1,53 @@
 package fr.elplauto.gocrypto.model;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 public class Wallet {
 
-    private Map<Integer, Float> mapCryptoIdToAmount;
+    @SerializedName("USD")
+    @Expose
+    private Double usd;
+    @SerializedName("crypto")
+    @Expose
+    private List<CryptoInWallet> crypto = null;
+    @SerializedName("history")
+    @Expose
+    private List<History> history = null;
 
     public Wallet() {
-        this.mapCryptoIdToAmount = new HashMap<>();
+        crypto = new ArrayList<>();
+        history = new ArrayList<>();
     }
 
-    private Float getAmount(Integer cryptoId) {
-        return mapCryptoIdToAmount.get(cryptoId);
+    public Wallet(Double usd) {
+        this();
+        this.usd = usd;
     }
 
-    private Float setAmount(Integer cryptoId, Float amount) {
-        return this.mapCryptoIdToAmount.put(cryptoId, amount);
+    public Double getUsd() {
+        return usd;
     }
 
-    private void clear() {
-        this.mapCryptoIdToAmount.clear();
+    public void setUsd(Double usd) {
+        this.usd = usd;
     }
 
-    private Float remove(Integer cryptoId) {
-        return this.mapCryptoIdToAmount.remove(cryptoId);
+    public List<CryptoInWallet> getCrypto() {
+        return crypto;
     }
 
-    private Set<Integer> getAllCrypto() {
-        return this.mapCryptoIdToAmount.keySet();
+    public void setCrypto(List<CryptoInWallet> crypto) {
+        this.crypto = crypto;
+    }
+
+    public List<History> getHistory() {
+        return history;
+    }
+
+    public void setHistory(List<History> history) {
+        this.history = history;
     }
 }

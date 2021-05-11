@@ -20,7 +20,7 @@ public class Crypto {
     private Double price;
     @SerializedName("priceHistory")
     @Expose
-    private List<PriceHistory> priceHistory = null;
+    private List<History> priceHistory = null;
     @SerializedName("percentChange1h")
     @Expose
     private Double percentChange1h;
@@ -72,11 +72,11 @@ public class Crypto {
         this.price = price;
     }
 
-    public List<PriceHistory> getPriceHistory() {
+    public List<History> getPriceHistory() {
         return priceHistory;
     }
 
-    public void setPriceHistory(List<PriceHistory> priceHistory) {
+    public void setPriceHistory(List<History> priceHistory) {
         this.priceHistory = priceHistory;
     }
 

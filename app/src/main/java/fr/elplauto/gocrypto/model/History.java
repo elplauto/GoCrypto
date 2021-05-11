@@ -3,7 +3,7 @@ package fr.elplauto.gocrypto.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class PriceHistory {
+public class History {
 
     @SerializedName("timestamp")
     @Expose
@@ -11,6 +11,13 @@ public class PriceHistory {
     @SerializedName("value")
     @Expose
     private Double value;
+
+    public History() {}
+
+    public History(String timestamp, Double value) {
+        this.timestamp = timestamp;
+        this.value = value;
+    }
 
     public String getTimestamp() {
         return timestamp;

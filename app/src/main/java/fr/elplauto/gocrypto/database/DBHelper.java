@@ -11,6 +11,9 @@ import android.util.Log;
 import java.util.ArrayList;
 
 import fr.elplauto.gocrypto.model.Crypto;
+import fr.elplauto.gocrypto.model.CryptoInWallet;
+import fr.elplauto.gocrypto.model.History;
+import fr.elplauto.gocrypto.model.Wallet;
 
 public class DBHelper extends SQLiteOpenHelper {
 
@@ -32,7 +35,6 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public DBHelper(Context context) {
         super(context, DATABASE_NAME , null, 1);
-        Log.d(TAG, "Constructor");
     }
 
     @Override
@@ -50,13 +52,30 @@ public class DBHelper extends SQLiteOpenHelper {
                 CRYPTO_COLUMN_CHANGE_60D + " float," +
                 CRYPTO_COLUMN_CHANGE_90D + " float)");
 
-        Log.d(TAG, "On create");
+        db.execSQL("CREATE TABLE wallet "+
+                        "(id integer primary key," +
+                        "usd double)");
+
+        db.execSQL("CREATE TABLE history "+
+                "(id integer primary key," +
+                "timestamp string," +
+                "value double)");
+
+        db.execSQL("CREATE TABLE cryptoWallet "+
+                "(id integer primary key," +
+                "id_crypto integer," +
+                "amount double," +
+                "purchasing_price double," +
+                "id_wallet integer)");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // TODO Auto-generated method stub
         db.execSQL("DROP TABLE IF EXISTS " + CRYPTO_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS cryptoWallet");
+        db.execSQL("DROP TABLE IF EXISTS history");
+        db.execSQL("DROP TABLE IF EXISTS wallet");
         onCreate(db);
     }
 
@@ -137,4 +156,74 @@ public class DBHelper extends SQLiteOpenHelper {
         }
         return cryptoList;
     }
+
+    public boolean insertWallet (Wallet wallet) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        //clear existing wallet
+        db.execSQL("delete from history");
+        db.execSQL("delete from cryptoWallet");
+        db.execSQL("delete from wallet");
+
+        //add wallet
+        ContentValues contentValuesWallet = new ContentValues();
+        contentValuesWallet.put("usd", wallet.getUsd());
+        db.insert("wallet", null, contentValuesWallet);
+
+        for (CryptoInWallet crypto : wallet.getCrypto()) {
+            ContentValues contentValuesCrypto = new ContentValues();
+            contentValuesCrypto.put("id_crypto", crypto.getId());
+            contentValuesCrypto.put("amount", crypto.getAmount());
+            contentValuesCrypto.put("purchasing_price", crypto.getPurchasingPrice());
+            db.insert("cryptoWallet", null, contentValuesCrypto);
+        }
+
+        for (History history : wallet.getHistory()) {
+            ContentValues contentValuesHistory = new ContentValues();
+            contentValuesHistory.put("timestamp", history.getTimestamp());
+            contentValuesHistory.put("value", history.getValue());
+            db.insert("history", null, contentValuesHistory);
+        }
+
+        return true;
+    }
+
+    public Wallet getWallet() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Wallet wallet = new Wallet();
+
+        //get usd
+        Cursor res =  db.rawQuery( "select * from wallet", null );
+        res.moveToFirst();
+        wallet.setUsd(res.getDouble(res.getColumnIndex("usd")));
+
+        //get crypto
+        res =  db.rawQuery( "select * from cryptoWallet", null );
+        res.moveToFirst();
+
+        while(!res.isAfterLast()){
+            CryptoInWallet crypto = new CryptoInWallet();
+            crypto.setId(res.getInt(res.getColumnIndex("id_crypto")));
+            crypto.setAmount(res.getDouble(res.getColumnIndex("amount")));
+            crypto.setPurchasingPrice(res.getDouble(res.getColumnIndex("purchasing_price")));
+            wallet.getCrypto().add(crypto);
+            res.moveToNext();
+        }
+
+        //get history
+        res =  db.rawQuery( "select * from history", null );
+        res.moveToFirst();
+
+        while(!res.isAfterLast()){
+            History history = new History();
+            history.setTimestamp(res.getString(res.getColumnIndex("timestamp")));
+            history.setValue(res.getDouble(res.getColumnIndex("value")));
+            wallet.getHistory().add(history);
+            res.moveToNext();
+        }
+
+        return wallet;
+    }
+
+
 }

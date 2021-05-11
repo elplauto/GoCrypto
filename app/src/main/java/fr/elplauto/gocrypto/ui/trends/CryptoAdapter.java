@@ -1,6 +1,7 @@
 package fr.elplauto.gocrypto.ui.trends;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
 
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Currency;
 import java.util.List;
@@ -106,17 +106,18 @@ public class CryptoAdapter extends RecyclerView.Adapter<CryptoAdapter.ViewHolder
     }
 
     private String formatPrice(Double price) {
-        String priceDecimalReduced = null;
-        if (price < 1) {
-            priceDecimalReduced = String.format("%.04f", price);
-        } else if (price < 10) {
-            priceDecimalReduced = String.format("%.03f", price);
-        } else {
-            priceDecimalReduced = String.format("%.02f", price);
+        int fractionDigits = 0;
+        double inv = 1d / price;
+        while (inv > 0.1) {
+            inv = inv / 10d;
+            fractionDigits = fractionDigits + 1;
         }
+        fractionDigits += 2;
 
         NumberFormat format = NumberFormat.getCurrencyInstance(Locale.US);
         format.setCurrency(Currency.getInstance("USD"));
-        return format.format(Double.valueOf(priceDecimalReduced));
+        format.setMinimumFractionDigits(fractionDigits);
+        format.setMaximumFractionDigits(fractionDigits);
+        return format.format(price);
     }
 }

@@ -7,6 +7,7 @@ import android.util.Log;
 import java.util.List;
 
 import fr.elplauto.gocrypto.model.Crypto;
+import fr.elplauto.gocrypto.model.Wallet;
 
 public class DBManager {
 
@@ -35,7 +36,13 @@ public class DBManager {
         return dbHelper.getAllCrypto();
     }
 
+    public void saveWallet(Wallet wallet) {
+        dbHelper.insertWallet(wallet);
+    }
 
+    public Wallet getWallet() {
+        return dbHelper.getWallet();
+    }
 
 
 
