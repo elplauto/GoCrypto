@@ -27,8 +27,11 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 
 import java.text.Format;
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.List;
+import java.util.Locale;
 
 import fr.elplauto.gocrypto.R;
 import fr.elplauto.gocrypto.database.DBManager;
@@ -52,16 +55,20 @@ public class WalletFragment extends Fragment {
         dbManager = new DBManager(getContext());
         Wallet wallet = dbManager.getWallet();
         drawChart(wallet.getHistory());
-        
+
         return root;
     }
 
     private void drawChart(List<History> historyList) {
         List <Entry> entries = new ArrayList<>();
         int index = 0;
-        for (History history : historyList) {
+        /**for (History history : historyList) {
             entries.add(new Entry(index, history.getValue().floatValue()));
             index++;
+        }**/
+        for (int i = 0; i < 28; i++) {
+            float value = (float) Math.random();
+            entries.add(new Entry(i, value));
         }
         LineDataSet dataSet = new LineDataSet(entries, "Label"); // add entries to dataset
         dataSet.setValueFormatter(new MyValueFormatter(entries));
@@ -89,9 +96,6 @@ public class WalletFragment extends Fragment {
         chart.invalidate(); // refresh
     }
 
-
-
-
 }
 
 class MyValueFormatter extends ValueFormatter {
@@ -99,12 +103,18 @@ class MyValueFormatter extends ValueFormatter {
     private List<Entry> entries;
     private Entry maxEntry;
     private Entry minEntry;
+    private NumberFormat format;
 
     public MyValueFormatter(List<Entry> entries) {
         this.entries = entries;
         this.maxEntry = getMaxEntry();
         this.minEntry = getMinEntry();
+        this.format = NumberFormat.getCurrencyInstance(Locale.US);
+        this.format.setCurrency(Currency.getInstance("USD"));
     }
+
+
+
 
     public Entry getMaxEntry() {
         Entry max = this.entries.get(0);
@@ -129,9 +139,10 @@ class MyValueFormatter extends ValueFormatter {
     @Override
     public String getPointLabel(Entry entry) {
         if (entry.equals(maxEntry) || entry.equals(minEntry)) {
-            return entry.getY()+"";
+            return format.format(entry.getY());
         } else {
             return "";
         }
     }
+
 }

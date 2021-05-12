@@ -20,16 +20,9 @@ public class LeaderboardFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        leaderboardViewModel =
-                ViewModelProviders.of(this).get(LeaderboardViewModel.class);
+
         View root = inflater.inflate(R.layout.fragment_leaderboard, container, false);
-        final TextView textView = root.findViewById(R.id.text_leaderboard);
-        leaderboardViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
-            }
-        });
+        
         return root;
     }
 }
