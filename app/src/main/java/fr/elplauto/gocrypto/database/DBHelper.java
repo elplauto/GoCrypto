@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import fr.elplauto.gocrypto.model.Crypto;
 import fr.elplauto.gocrypto.model.CryptoInWallet;
@@ -39,8 +40,16 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        db.execSQL("DROP TABLE IF EXISTS history_1h_crypto");
+        db.execSQL("DROP TABLE IF EXISTS history_7d_crypto");
+        db.execSQL("DROP TABLE IF EXISTS " + CRYPTO_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS history_1h_wallet");
+        db.execSQL("DROP TABLE IF EXISTS history_7d_wallet");
+        db.execSQL("DROP TABLE IF EXISTS cryptoWallet");
+        db.execSQL("DROP TABLE IF EXISTS wallet");
+
         db.execSQL("CREATE TABLE " + CRYPTO_TABLE_NAME +
-                "(" + CRYPTO_COLUMN_ID + "integer primary key," +
+                "(" + CRYPTO_COLUMN_ID + " integer primary key," +
                 CRYPTO_COLUMN_ID_CRYPTO + " text," +
                 CRYPTO_COLUMN_NAME + " text," +
                 CRYPTO_COLUMN_SYMBOL + " text," +
@@ -52,31 +61,45 @@ public class DBHelper extends SQLiteOpenHelper {
                 CRYPTO_COLUMN_CHANGE_60D + " float," +
                 CRYPTO_COLUMN_CHANGE_90D + " float)");
 
-        db.execSQL("CREATE TABLE wallet "+
-                        "(id integer primary key," +
-                        "usd double)");
-
-        db.execSQL("CREATE TABLE history "+
+        db.execSQL("CREATE TABLE history_1h_crypto "+
                 "(id integer primary key," +
                 "timestamp string," +
-                "value double)");
+                "value float," +
+                "id_crypto," +
+                "FOREIGN KEY(id_crypto) REFERENCES crypto(id))");
+
+        db.execSQL("CREATE TABLE history_7d_crypto "+
+                "(id integer primary key," +
+                "timestamp string," +
+                "value float," +
+                "id_crypto," +
+                "FOREIGN KEY(id_crypto) REFERENCES crypto(id))");
+
+        db.execSQL("CREATE TABLE wallet "+
+                        "(id integer primary key," +
+                        "usd float)");
+
+        db.execSQL("CREATE TABLE history_1h_wallet "+
+                "(id integer primary key," +
+                "timestamp string," +
+                "value float)");
+
+        db.execSQL("CREATE TABLE history_7d_wallet "+
+                "(id integer primary key," +
+                "timestamp string," +
+                "value float)");
 
         db.execSQL("CREATE TABLE cryptoWallet "+
                 "(id integer primary key," +
                 "id_crypto integer," +
-                "amount double," +
-                "purchasing_price double," +
+                "amount float," +
+                "purchasing_price float," +
                 "id_wallet integer)");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // TODO Auto-generated method stub
-        db.execSQL("DROP TABLE IF EXISTS " + CRYPTO_TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS cryptoWallet");
-        db.execSQL("DROP TABLE IF EXISTS history");
-        db.execSQL("DROP TABLE IF EXISTS wallet");
-        onCreate(db);
     }
 
     public boolean insertCrypto (Crypto crypto) {
@@ -92,14 +115,68 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(CRYPTO_COLUMN_CHANGE_30D, crypto.getPercentChange30d());
         contentValues.put(CRYPTO_COLUMN_CHANGE_60D, crypto.getPercentChange60d());
         contentValues.put(CRYPTO_COLUMN_CHANGE_90D, crypto.getPercentChange90d());
-        db.insert(CRYPTO_TABLE_NAME, null, contentValues);
+        long id = db.insert(CRYPTO_TABLE_NAME, null, contentValues);
+
+        /**for (History history : crypto.getHistory1h()) {
+            ContentValues contentValuesHistory1h = new ContentValues();
+            contentValuesHistory1h.put("timestamp", history.getTimestamp());
+            contentValuesHistory1h.put("value", history.getValue());
+            contentValuesHistory1h.put("id_crypto", id);
+            db.insert("history_1h_crypto", null, contentValuesHistory1h);
+        }
+
+        for (History history : crypto.getHistory7d()) {
+            ContentValues contentValuesHistory7d = new ContentValues();
+            contentValuesHistory7d.put("timestamp", history.getTimestamp());
+            contentValuesHistory7d.put("value", history.getValue());
+            contentValuesHistory7d.put("id_crypto", id);
+            db.insert("history_7d_crypto", null, contentValuesHistory7d);
+        }**/
+
         return true;
     }
 
-    public Cursor getData(int id) {
+    public Crypto getCrypto(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res =  db.rawQuery( "select * from crypto where id="+id+"", null );
-        return res;
+        Cursor res =  db.rawQuery( "select * from crypto where id_crypto="+id+"", null );
+
+        Crypto crypto = new Crypto();
+        int cryptoId = res.getInt(res.getColumnIndex(CRYPTO_COLUMN_ID_CRYPTO));
+        crypto.setId(res.getInt(res.getColumnIndex(CRYPTO_COLUMN_ID_CRYPTO)));
+        crypto.setName(res.getString(res.getColumnIndex(CRYPTO_COLUMN_NAME)));
+        crypto.setSymbol(res.getString(res.getColumnIndex(CRYPTO_COLUMN_SYMBOL)));
+        crypto.setPrice(res.getDouble(res.getColumnIndex(CRYPTO_COLUMN_PRICE)));
+        crypto.setPercentChange1h(res.getDouble(res.getColumnIndex(CRYPTO_COLUMN_CHANGE_1H)));
+        crypto.setPercentChange24h(res.getDouble(res.getColumnIndex(CRYPTO_COLUMN_CHANGE_24H)));
+        crypto.setPercentChange7d(res.getDouble(res.getColumnIndex(CRYPTO_COLUMN_CHANGE_7D)));
+        crypto.setPercentChange30d(res.getDouble(res.getColumnIndex(CRYPTO_COLUMN_CHANGE_30D)));
+        crypto.setPercentChange60d(res.getDouble(res.getColumnIndex(CRYPTO_COLUMN_CHANGE_60D)));
+        crypto.setPercentChange90d(res.getDouble(res.getColumnIndex(CRYPTO_COLUMN_CHANGE_90D)));
+
+        List<History> history1h = new ArrayList<>();
+        Cursor resHistory =  db.rawQuery( "select * from history_1h_crypto where id=" + cryptoId , null );
+        resHistory.moveToFirst();
+        while(!resHistory.isAfterLast()) {
+            History history = new History();
+            history.setTimestamp(resHistory.getString(resHistory.getColumnIndex("timestamp")));
+            history.setValue(resHistory.getDouble(resHistory.getColumnIndex("value")));
+            history1h.add(history);
+            resHistory.moveToNext();
+        }
+        crypto.setHistory1h(history1h);
+
+        List<History> history7d = new ArrayList<>();
+        resHistory =  db.rawQuery( "select * from history_7d_crypto where id=" + cryptoId , null );
+        resHistory.moveToFirst();
+        while(!resHistory.isAfterLast()) {
+            History history = new History();
+            history.setTimestamp(resHistory.getString(resHistory.getColumnIndex("timestamp")));
+            history.setValue(resHistory.getDouble(resHistory.getColumnIndex("value")));
+            history7d.add(history);
+            resHistory.moveToNext();
+        }
+        crypto.setHistory7d(history7d);
+        return crypto;
     }
 
     public int numberOfRows(){
@@ -151,10 +228,19 @@ public class DBHelper extends SQLiteOpenHelper {
             crypto.setPercentChange30d(res.getDouble(res.getColumnIndex(CRYPTO_COLUMN_CHANGE_30D)));
             crypto.setPercentChange60d(res.getDouble(res.getColumnIndex(CRYPTO_COLUMN_CHANGE_60D)));
             crypto.setPercentChange90d(res.getDouble(res.getColumnIndex(CRYPTO_COLUMN_CHANGE_90D)));
+            crypto.setHistory1h(new ArrayList<History>());
+            crypto.setHistory7d(new ArrayList<History>());
             cryptoList.add(crypto);
             res.moveToNext();
         }
         return cryptoList;
+    }
+
+    public void deleteAllCrypto() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("delete from history_1h_crypto");
+        db.execSQL("delete from history_7d_crypto");
+        db.execSQL("delete from crypto");
     }
 
     public boolean insertWallet (Wallet wallet) {
@@ -178,11 +264,18 @@ public class DBHelper extends SQLiteOpenHelper {
             db.insert("cryptoWallet", null, contentValuesCrypto);
         }
 
-        for (History history : wallet.getHistory()) {
+        for (History history : wallet.getHistory1h()) {
             ContentValues contentValuesHistory = new ContentValues();
             contentValuesHistory.put("timestamp", history.getTimestamp());
             contentValuesHistory.put("value", history.getValue());
-            db.insert("history", null, contentValuesHistory);
+            db.insert("history_1h_wallet", null, contentValuesHistory);
+        }
+
+        for (History history : wallet.getHistory7d()) {
+            ContentValues contentValuesHistory = new ContentValues();
+            contentValuesHistory.put("timestamp", history.getTimestamp());
+            contentValuesHistory.put("value", history.getValue());
+            db.insert("history_7d_wallet", null, contentValuesHistory);
         }
 
         return true;
@@ -210,15 +303,27 @@ public class DBHelper extends SQLiteOpenHelper {
             res.moveToNext();
         }
 
-        //get history
-        res =  db.rawQuery( "select * from history", null );
+        //get history 1h
+        res =  db.rawQuery( "select * from history_1h_wallet", null );
         res.moveToFirst();
 
         while(!res.isAfterLast()){
             History history = new History();
             history.setTimestamp(res.getString(res.getColumnIndex("timestamp")));
             history.setValue(res.getDouble(res.getColumnIndex("value")));
-            wallet.getHistory().add(history);
+            wallet.getHistory1h().add(history);
+            res.moveToNext();
+        }
+
+        //get history 7d
+        res =  db.rawQuery( "select * from history_7d_wallet", null );
+        res.moveToFirst();
+
+        while(!res.isAfterLast()){
+            History history = new History();
+            history.setTimestamp(res.getString(res.getColumnIndex("timestamp")));
+            history.setValue(res.getDouble(res.getColumnIndex("value")));
+            wallet.getHistory7d().add(history);
             res.moveToNext();
         }
 

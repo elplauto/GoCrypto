@@ -1,6 +1,9 @@
 package fr.elplauto.gocrypto;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -13,6 +16,8 @@ import androidx.navigation.ui.NavigationUI;
 import fr.elplauto.gocrypto.model.SessionManager;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +34,10 @@ public class MainActivity extends AppCompatActivity {
 
         SessionManager sessionManager = SessionManager.getInstance(getApplicationContext());
         sessionManager.checkLogin();
+
+        SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE).edit();
+        editor.putBoolean("dataLoaded", false);
+        editor.commit();
     }
 
 }

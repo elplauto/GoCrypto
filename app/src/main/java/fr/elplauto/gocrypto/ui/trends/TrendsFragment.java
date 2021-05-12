@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
@@ -52,6 +54,7 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
     TextView displayPercentTextView;
     TextView allCryptoTextView;
     TextView sortTextView;
+
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         trendsViewModel = ViewModelProviders.of(this).get(TrendsViewModel.class);
@@ -260,7 +263,24 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
         allCryptoTextView = root.findViewById(R.id.allCryptoTextView);
 
         dbManager = new DBManager(getContext());
-        loadCryptoFromDB();
+
+        boolean dataLoaded = getContext().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE).getBoolean("dataLoaded", false);
+        if (dataLoaded) {
+            loadCryptoFromDB();
+        } else {
+            loadCryptoFromCMC();
+            swipeContainer.post(new Runnable() {
+                @Override
+                public void run() {
+                    swipeContainer.setRefreshing(true);
+                    loadCryptoFromCMC();
+                }
+            });
+            SharedPreferences.Editor editor = getContext().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE).edit();
+            editor.putBoolean("dataLoaded", true);
+            editor.commit();
+        }
+
 
         return root;
     }
@@ -329,7 +349,7 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
                 cryptoList.sort(new Comparator<Crypto>() {
                     @Override
                     public int compare(Crypto o1, Crypto o2) {
-                        return o1.getName().compareTo(o2.getName());
+                        return o1.getName().toLowerCase().compareTo(o2.getName().toLowerCase());
                     }
                 });
             }
@@ -337,7 +357,7 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
                 cryptoList.sort(new Comparator<Crypto>() {
                     @Override
                     public int compare(Crypto o1, Crypto o2) {
-                        return o2.getName().compareTo(o1.getName());
+                        return o2.getName().toLowerCase().compareTo(o1.getName().toLowerCase());
                     }
                 });
             }
@@ -491,13 +511,14 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
     @Override
     public void onCryptoServiceCallback(final List<Crypto> cryptoList) {
         this.cryptoList = cryptoList;
+        dbManager.replaceCryptoList(cryptoList);
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 List<Crypto> filteredList = applyAllFiltersToList(cryptoList);
                 displayCryptoList(filteredList);
                 swipeContainer.setRefreshing(false);
-                dbManager.replaceCryptoList(cryptoList);
+
             }
         });
     }

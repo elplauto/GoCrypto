@@ -26,7 +26,7 @@ public class DBManager {
     }
 
     public void replaceCryptoList(List<Crypto> cryptoList) {
-        dbHelper.onUpgrade(db,0,0);
+        dbHelper.deleteAllCrypto();
         for (Crypto crypto : cryptoList) {
             dbHelper.insertCrypto(crypto);
         }

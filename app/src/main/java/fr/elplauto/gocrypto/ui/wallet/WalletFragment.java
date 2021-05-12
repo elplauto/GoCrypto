@@ -53,8 +53,8 @@ public class WalletFragment extends Fragment {
         chart = (LineChart) root.findViewById(R.id.chartWallet);
 
         dbManager = new DBManager(getContext());
-        Wallet wallet = dbManager.getWallet();
-        drawChart(wallet.getHistory());
+//        Wallet wallet = dbManager.getWallet();
+    //    drawChart(wallet.getHistory1h());
 
         return root;
     }

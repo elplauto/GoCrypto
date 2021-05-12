@@ -13,18 +13,16 @@ public class Wallet {
     @SerializedName("crypto")
     @Expose
     private List<CryptoInWallet> crypto = null;
-    @SerializedName("history")
+    @SerializedName("history_1h")
     @Expose
-    private List<History> history = null;
+    private List<History> history1h = null;
+    @SerializedName("history_7d")
+    @Expose
+    private List<History> history7d = null;
 
     public Wallet() {
-        crypto = new ArrayList<>();
-        history = new ArrayList<>();
-    }
-
-    public Wallet(Double usd) {
-        this();
-        this.usd = usd;
+        this.history1h = new ArrayList<>();
+        this.history7d = new ArrayList<>();
     }
 
     public Double getUsd() {
@@ -43,11 +41,19 @@ public class Wallet {
         this.crypto = crypto;
     }
 
-    public List<History> getHistory() {
-        return history;
+    public List<History> getHistory1h() {
+        return history1h;
     }
 
-    public void setHistory(List<History> history) {
-        this.history = history;
+    public void setHistory1h(List<History> history1h) {
+        this.history1h = history1h;
+    }
+
+    public List<History> getHistory7d() {
+        return history7d;
+    }
+
+    public void setHistory7d(List<History> history7d) {
+        this.history7d = history7d;
     }
 }
