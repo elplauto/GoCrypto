@@ -1,5 +1,7 @@
 package fr.elplauto.gocrypto.ui.wallet;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -48,6 +50,9 @@ public class WalletFragment extends Fragment implements WalletService.WalletServ
     private DBManager dbManager;
     LineChart chart;
     TextView wallet_total_amount;
+    TextView btn_1h;
+    TextView btn_7d;
+    Wallet wallet;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -55,6 +60,29 @@ public class WalletFragment extends Fragment implements WalletService.WalletServ
         View root = inflater.inflate(R.layout.fragment_wallet, container, false);
         chart = root.findViewById(R.id.chartWallet);
         wallet_total_amount = root.findViewById(R.id.wallet_total_amount);
+        btn_1h = root.findViewById(R.id.btn_1h_wallet);
+        btn_7d = root.findViewById(R.id.btn_7d_wallet);
+
+        btn_1h.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                displayChart1h();
+            }
+        });
+
+        btn_7d.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                displayChart7d();
+            }
+        });
+
+        String chartDisplayPeriod = getContext().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE).getString("chartPeriod", "1h");
+        if (chartDisplayPeriod.equals("1h")) {
+            btn_1h.setTextColor(ContextCompat.getColor(getContext(), R.color.blue));
+        } else {
+            btn_7d.setTextColor(ContextCompat.getColor(getContext(), R.color.blue));
+        }
 
         dbManager = new DBManager(getContext());
 
@@ -62,16 +90,29 @@ public class WalletFragment extends Fragment implements WalletService.WalletServ
         String username = sessionManager.getUsername();
         WalletService.getWallet(this, username);
 
-
         return root;
     }
 
-    private void drawChart(List<History> historyList) {
+    private void drawChart(Wallet wallet) {
+
+        String chartDisplayPeriod = getContext().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE).getString("chartPeriod", "1h");
+        List<History> historyList;
+        if (chartDisplayPeriod.equals("1h")) {
+            historyList = wallet.getHistory1h();
+        } else {
+            historyList = wallet.getHistory7d();
+        }
+
+        for (History history : historyList) {
+            Log.d(TAG, history.getValue().toString());
+        }
+
         List <Entry> entries = new ArrayList<>();
         int index = 0;
-        for (History history : historyList) {
-            entries.add(new Entry(index, history.getValue().floatValue()));
-            index++;
+        for (int i = 0; i < historyList.size(); i++) {
+            int reverseIndex = historyList.size() - 1 - i;
+            Float value = historyList.get(reverseIndex).getValue().floatValue();
+            entries.add(new Entry(i, value));
         }
         LineDataSet dataSet = new LineDataSet(entries, "Label"); // add entries to dataset
         dataSet.setValueFormatter(new MyValueFormatter(entries));
@@ -97,19 +138,42 @@ public class WalletFragment extends Fragment implements WalletService.WalletServ
         rightAxis.setDrawGridLines(false);
         chart.getLegend().setEnabled(false);
         chart.invalidate(); // refresh
+        chart.notifyDataSetChanged();
     }
 
     @Override
     public void onWalletServiceCallback(Wallet wallet) {
+        this.wallet = wallet;
         NumberFormat format = NumberFormat.getCurrencyInstance(Locale.US);
         format.setCurrency(Currency.getInstance("USD"));
         Double price = wallet.getHistory1h().get(0).getValue();
         String formattedPrice = format.format(price);
         wallet_total_amount.setText(formattedPrice);
-        List<History> reversedCopy = wallet.getHistory1h().subList(0, wallet.getHistory1h().size());
-        Collections.reverse(reversedCopy);
-        drawChart(reversedCopy);
+        drawChart(wallet);
     }
+
+    private void displayChart1h() {
+        btn_1h.setTextColor(ContextCompat.getColor(getContext(), R.color.blue));
+        btn_7d.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
+        SharedPreferences.Editor editor = getContext().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE).edit();
+        editor.putString("chartPeriod", "1h");
+        editor.apply();
+        if (this.wallet != null) {
+            drawChart(wallet);
+        }
+    }
+
+    private void displayChart7d() {
+        btn_7d.setTextColor(ContextCompat.getColor(getContext(), R.color.blue));
+        btn_1h.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
+        SharedPreferences.Editor editor = getContext().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE).edit();
+        editor.putString("chartPeriod", "7d");
+        editor.apply();
+        if (this.wallet != null) {
+            drawChart(wallet);
+        }
+    }
+
 }
 
 class MyValueFormatter extends ValueFormatter {
@@ -126,9 +190,6 @@ class MyValueFormatter extends ValueFormatter {
         this.format = NumberFormat.getCurrencyInstance(Locale.US);
         this.format.setCurrency(Currency.getInstance("USD"));
     }
-
-
-
 
     public Entry getMaxEntry() {
         Entry max = this.entries.get(0);

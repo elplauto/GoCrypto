@@ -50,6 +50,7 @@
         app:layout_constraintTop_toBottomOf="@+id/chartWallet">
 
         <TextView
+            android:id="@+id/btn_1h_wallet"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/back_text"
@@ -62,6 +63,7 @@
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/btn_7d_wallet"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="30dp"
