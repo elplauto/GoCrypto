@@ -1,6 +1,5 @@
 package fr.elplauto.gocrypto.api;
 
-import android.content.Context;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -13,20 +12,21 @@ import java.util.List;
 
 import fr.elplauto.gocrypto.model.Crypto;
 import fr.elplauto.gocrypto.model.DataSearchAllCrypto;
+import fr.elplauto.gocrypto.model.Leaderboard;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class CryptoService {
+public class LeaderboardService {
 
-    private static final String TAG = "CryptoService";
-    public static void loadAllCrypto(final CryptoServiceCallbackListener cryptoServiceCallbackListener) {
+    private static final String TAG = "LeaderboardService";
+    public static void getLeaderboard(final LeaderboardServiceCallbackListener leaderboardServiceCallbackListener) {
 
         OkHttpClient client = new OkHttpClient();
-        String url = "https://go-crypto.herokuapp.com/crypto";
-        Log.d(TAG, "crypto url : " + url);
+        String url = "https://go-crypto.herokuapp.com/leaderboard";
+        Log.d(TAG, "leaderboard url : " + url);
 
         Request request = new Request.Builder().url(url).build();
 
@@ -43,9 +43,8 @@ public class CryptoService {
                     JSONObject json = new JSONObject(responseData);
                     Log.d(TAG, "JSON : " + json.toString());
                     Gson gson = new Gson();
-                    DataSearchAllCrypto dataSearchAllCrypto = gson.fromJson(json.toString(), DataSearchAllCrypto.class);
-                    List<Crypto> cryptoList = dataSearchAllCrypto.getData();
-                    cryptoServiceCallbackListener.onCryptoServiceCallback(cryptoList);
+                    Leaderboard leaderboard = gson.fromJson(json.toString(), Leaderboard.class);
+                    leaderboardServiceCallbackListener.onLeaderboardServiceCallback(leaderboard);
                 } catch (JSONException | IOException e) {
                     e.printStackTrace();
                 }
@@ -53,7 +52,7 @@ public class CryptoService {
         });
     }
 
-    public interface CryptoServiceCallbackListener {
-        void onCryptoServiceCallback(List<Crypto> cryptoList);
+    public interface LeaderboardServiceCallbackListener {
+        void onLeaderboardServiceCallback(Leaderboard leaderboard);
     }
 }

@@ -1,6 +1,7 @@
 package fr.elplauto.gocrypto.api;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -19,14 +20,14 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class CryptoService {
+public class CryptoDetailsService {
 
-    private static final String TAG = "CryptoService";
-    public static void loadAllCrypto(final CryptoServiceCallbackListener cryptoServiceCallbackListener) {
+    private static final String TAG = "CryptoDetailsService";
+    public static void getCryptoDetails(final CryptoDetailsServiceCallbackListener cryptoDetailsServiceCallbackListener, Integer cryptoId) {
 
         OkHttpClient client = new OkHttpClient();
-        String url = "https://go-crypto.herokuapp.com/crypto";
-        Log.d(TAG, "crypto url : " + url);
+        String url = "https://go-crypto.herokuapp.com/crypto?id=" + cryptoId;
+        Log.d(TAG, "crypto details url : " + url);
 
         Request request = new Request.Builder().url(url).build();
 
@@ -43,9 +44,8 @@ public class CryptoService {
                     JSONObject json = new JSONObject(responseData);
                     Log.d(TAG, "JSON : " + json.toString());
                     Gson gson = new Gson();
-                    DataSearchAllCrypto dataSearchAllCrypto = gson.fromJson(json.toString(), DataSearchAllCrypto.class);
-                    List<Crypto> cryptoList = dataSearchAllCrypto.getData();
-                    cryptoServiceCallbackListener.onCryptoServiceCallback(cryptoList);
+                    Crypto crypto = gson.fromJson(json.toString(), Crypto.class);
+                    cryptoDetailsServiceCallbackListener.onCryptoDetailsServiceCallback((crypto));
                 } catch (JSONException | IOException e) {
                     e.printStackTrace();
                 }
@@ -53,7 +53,7 @@ public class CryptoService {
         });
     }
 
-    public interface CryptoServiceCallbackListener {
-        void onCryptoServiceCallback(List<Crypto> cryptoList);
+    public interface CryptoDetailsServiceCallbackListener {
+        void onCryptoDetailsServiceCallback(Crypto crypto);
     }
 }

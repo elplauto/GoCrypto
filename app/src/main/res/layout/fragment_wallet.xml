@@ -27,7 +27,7 @@
         android:layout_marginTop="?attr/actionBarSize"
         android:paddingBottom="5dp"
         android:background="@color/colorPrimary"
-        android:text="$425,511.20"
+        android:text="$0"
         android:textColor="@color/colorWhite"
         android:textStyle="bold"
         android:paddingStart="@dimen/activity_horizontal_margin"

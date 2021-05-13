@@ -321,7 +321,7 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
     }
 
     private void loadCryptoFromCMC() {
-        CryptoService.loadAllCrypto(getContext(), this);
+        CryptoService.loadAllCrypto(this);
     }
 
     private void loadCryptoFromDB() {

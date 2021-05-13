@@ -13,8 +13,10 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import fr.elplauto.gocrypto.R;
+import fr.elplauto.gocrypto.api.LeaderboardService;
+import fr.elplauto.gocrypto.model.Leaderboard;
 
-public class LeaderboardFragment extends Fragment {
+public class LeaderboardFragment extends Fragment implements LeaderboardService.LeaderboardServiceCallbackListener {
 
     private LeaderboardViewModel leaderboardViewModel;
 
@@ -24,5 +26,10 @@ public class LeaderboardFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_leaderboard, container, false);
         
         return root;
+    }
+
+    @Override
+    public void onLeaderboardServiceCallback(Leaderboard leaderboard) {
+
     }
 }

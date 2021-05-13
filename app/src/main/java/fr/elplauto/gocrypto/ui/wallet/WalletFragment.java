@@ -29,32 +29,39 @@ import com.github.mikephil.charting.formatter.ValueFormatter;
 import java.text.Format;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
 
 import fr.elplauto.gocrypto.R;
+import fr.elplauto.gocrypto.api.WalletService;
 import fr.elplauto.gocrypto.database.DBManager;
 import fr.elplauto.gocrypto.model.CryptoInWallet;
 import fr.elplauto.gocrypto.model.History;
+import fr.elplauto.gocrypto.model.SessionManager;
 import fr.elplauto.gocrypto.model.Wallet;
 
-public class WalletFragment extends Fragment {
+public class WalletFragment extends Fragment implements WalletService.WalletServiceCallbackListener {
 
     private static final String TAG = "WalletFragment";
     private DBManager dbManager;
     LineChart chart;
+    TextView wallet_total_amount;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.fragment_wallet, container, false);
-
-        chart = (LineChart) root.findViewById(R.id.chartWallet);
+        chart = root.findViewById(R.id.chartWallet);
+        wallet_total_amount = root.findViewById(R.id.wallet_total_amount);
 
         dbManager = new DBManager(getContext());
-//        Wallet wallet = dbManager.getWallet();
-    //    drawChart(wallet.getHistory1h());
+
+        SessionManager sessionManager = SessionManager.getInstance(getContext());
+        String username = sessionManager.getUsername();
+        WalletService.getWallet(this, username);
+
 
         return root;
     }
@@ -62,13 +69,9 @@ public class WalletFragment extends Fragment {
     private void drawChart(List<History> historyList) {
         List <Entry> entries = new ArrayList<>();
         int index = 0;
-        /**for (History history : historyList) {
+        for (History history : historyList) {
             entries.add(new Entry(index, history.getValue().floatValue()));
             index++;
-        }**/
-        for (int i = 0; i < 28; i++) {
-            float value = (float) Math.random();
-            entries.add(new Entry(i, value));
         }
         LineDataSet dataSet = new LineDataSet(entries, "Label"); // add entries to dataset
         dataSet.setValueFormatter(new MyValueFormatter(entries));
@@ -96,6 +99,17 @@ public class WalletFragment extends Fragment {
         chart.invalidate(); // refresh
     }
 
+    @Override
+    public void onWalletServiceCallback(Wallet wallet) {
+        NumberFormat format = NumberFormat.getCurrencyInstance(Locale.US);
+        format.setCurrency(Currency.getInstance("USD"));
+        Double price = wallet.getHistory1h().get(0).getValue();
+        String formattedPrice = format.format(price);
+        wallet_total_amount.setText(formattedPrice);
+        List<History> reversedCopy = wallet.getHistory1h().subList(0, wallet.getHistory1h().size());
+        Collections.reverse(reversedCopy);
+        drawChart(reversedCopy);
+    }
 }
 
 class MyValueFormatter extends ValueFormatter {
