@@ -1,11 +1,11 @@
 package fr.elplauto.gocrypto.ui.trends;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,7 +16,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
@@ -33,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import fr.elplauto.gocrypto.CryptoDetailsActivity;
 import fr.elplauto.gocrypto.R;
 import fr.elplauto.gocrypto.api.CryptoService;
 import fr.elplauto.gocrypto.database.DBManager;
@@ -49,12 +49,12 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
     final CryptoAdapter.OnCryptoClickListener onCryptoClickListener = this;
     private SwipeRefreshLayout swipeContainer;
     private List<Crypto> cryptoList;
+    private List<Crypto> displayedList;
     SearchView searchView;
     ImageView sortArrowImageView;
     TextView displayPercentTextView;
     TextView allCryptoTextView;
     TextView sortTextView;
-
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         trendsViewModel = ViewModelProviders.of(this).get(TrendsViewModel.class);
@@ -315,6 +315,7 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
     }
 
     private void displayCryptoList(List<Crypto> cryptoList) {
+        this.displayedList = cryptoList;
         String percentChangePreference = getContext().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE).getString("percentChange", "1h");
         CryptoAdapter mAdapter = new CryptoAdapter(cryptoList, onCryptoClickListener, getContext(), percentChangePreference);
         recyclerView.setAdapter(mAdapter);
@@ -332,7 +333,12 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
 
     @Override
     public void onCryptoClick(int position) {
-
+        Crypto crypto = this.displayedList.get(0);
+        Intent intent = new Intent(getContext(), CryptoDetailsActivity.class);
+        Bundle b = new Bundle();
+        b.putInt("crypto_id", crypto.getId());
+        intent.putExtras(b);
+        startActivity(intent);
     }
 
     private List<Crypto> sortCryptoList(List<Crypto> cryptoList) {

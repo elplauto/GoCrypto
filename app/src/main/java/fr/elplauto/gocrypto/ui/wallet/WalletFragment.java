@@ -108,10 +108,9 @@ public class WalletFragment extends Fragment implements WalletService.WalletServ
         }
 
         List <Entry> entries = new ArrayList<>();
-        int index = 0;
-        for (int i = 0; i < historyList.size(); i++) {
+        for (int i = 0; i < historyList.size() - 1; i++) {
             int reverseIndex = historyList.size() - 1 - i;
-            Float value = historyList.get(reverseIndex).getValue().floatValue();
+            float value = historyList.get(reverseIndex).getValue().floatValue();
             entries.add(new Entry(i, value));
         }
         LineDataSet dataSet = new LineDataSet(entries, "Label"); // add entries to dataset
