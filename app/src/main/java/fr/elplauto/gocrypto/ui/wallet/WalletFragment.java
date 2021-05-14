@@ -103,12 +103,8 @@ public class WalletFragment extends Fragment implements WalletService.WalletServ
             historyList = wallet.getHistory7d();
         }
 
-        for (History history : historyList) {
-            Log.d(TAG, history.getValue().toString());
-        }
-
         List <Entry> entries = new ArrayList<>();
-        for (int i = 0; i < historyList.size() - 1; i++) {
+        for (int i = 0; i < historyList.size(); i++) {
             int reverseIndex = historyList.size() - 1 - i;
             float value = historyList.get(reverseIndex).getValue().floatValue();
             entries.add(new Entry(i, value));
@@ -184,8 +180,10 @@ class MyValueFormatter extends ValueFormatter {
 
     public MyValueFormatter(List<Entry> entries) {
         this.entries = entries;
-        this.maxEntry = getMaxEntry();
-        this.minEntry = getMinEntry();
+        if (entries.size() > 0) {
+            this.maxEntry = getMaxEntry();
+            this.minEntry = getMinEntry();
+        }
         this.format = NumberFormat.getCurrencyInstance(Locale.US);
         this.format.setCurrency(Currency.getInstance("USD"));
     }

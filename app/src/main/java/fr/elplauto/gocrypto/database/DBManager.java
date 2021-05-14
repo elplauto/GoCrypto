@@ -35,17 +35,4 @@ public class DBManager {
     public List<Crypto> getAllCrypto() {
         return dbHelper.getAllCrypto();
     }
-
-    public void saveWallet(Wallet wallet) {
-        dbHelper.insertWallet(wallet);
-    }
-
-    public Wallet getWallet() {
-        return dbHelper.getWallet();
-    }
-
-
-
-
-
 }

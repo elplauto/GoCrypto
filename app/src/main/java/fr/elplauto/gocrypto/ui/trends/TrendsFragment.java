@@ -517,10 +517,10 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
     @Override
     public void onCryptoServiceCallback(final List<Crypto> cryptoList) {
         this.cryptoList = cryptoList;
-        dbManager.replaceCryptoList(cryptoList);
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                dbManager.replaceCryptoList(cryptoList);
                 List<Crypto> filteredList = applyAllFiltersToList(cryptoList);
                 displayCryptoList(filteredList);
                 swipeContainer.setRefreshing(false);
