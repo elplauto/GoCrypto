@@ -4,23 +4,16 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 
-import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.Description;
-import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
@@ -28,10 +21,8 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 
-import java.text.Format;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
@@ -39,10 +30,10 @@ import java.util.Locale;
 import fr.elplauto.gocrypto.R;
 import fr.elplauto.gocrypto.api.WalletService;
 import fr.elplauto.gocrypto.database.DBManager;
-import fr.elplauto.gocrypto.model.CryptoInWallet;
 import fr.elplauto.gocrypto.model.History;
 import fr.elplauto.gocrypto.model.SessionManager;
 import fr.elplauto.gocrypto.model.Wallet;
+import fr.elplauto.gocrypto.utils.PriceFormatter;
 
 public class WalletFragment extends Fragment implements WalletService.WalletServiceCallbackListener {
 
@@ -110,9 +101,10 @@ public class WalletFragment extends Fragment implements WalletService.WalletServ
             entries.add(new Entry(i, value));
         }
         LineDataSet dataSet = new LineDataSet(entries, "Label"); // add entries to dataset
-        dataSet.setValueFormatter(new MyValueFormatter(entries));
+        dataSet.setValueFormatter(new PriceFormatter(entries));
         dataSet.setCircleColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
         dataSet.setColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
+        dataSet.setDrawCircles(false);
         LineData lineData = new LineData(dataSet);
         lineData.setValueTextColor(Color.BLACK);
         lineData.setValueTextSize(10f);
@@ -139,10 +131,8 @@ public class WalletFragment extends Fragment implements WalletService.WalletServ
     @Override
     public void onWalletServiceCallback(Wallet wallet) {
         this.wallet = wallet;
-        NumberFormat format = NumberFormat.getCurrencyInstance(Locale.US);
-        format.setCurrency(Currency.getInstance("USD"));
         Double price = wallet.getHistory1h().get(0).getValue();
-        String formattedPrice = format.format(price);
+        String formattedPrice = formatPrice(price);
         wallet_total_amount.setText(formattedPrice);
         drawChart(wallet);
     }
@@ -169,52 +159,21 @@ public class WalletFragment extends Fragment implements WalletService.WalletServ
         }
     }
 
-}
-
-class MyValueFormatter extends ValueFormatter {
-
-    private List<Entry> entries;
-    private Entry maxEntry;
-    private Entry minEntry;
-    private NumberFormat format;
-
-    public MyValueFormatter(List<Entry> entries) {
-        this.entries = entries;
-        if (entries.size() > 0) {
-            this.maxEntry = getMaxEntry();
-            this.minEntry = getMinEntry();
+    private String formatPrice(Double price) {
+        int fractionDigits = 0;
+        double inv = 1d / price;
+        while (inv > 0.1) {
+            inv = inv / 10d;
+            fractionDigits = fractionDigits + 1;
         }
-        this.format = NumberFormat.getCurrencyInstance(Locale.US);
-        this.format.setCurrency(Currency.getInstance("USD"));
-    }
+        fractionDigits += 2;
 
-    public Entry getMaxEntry() {
-        Entry max = this.entries.get(0);
-        for (Entry entry : this.entries) {
-            if (entry.getY() > max.getY()) {
-                max = entry;
-            }
-        }
-        return max;
-    }
-
-    public Entry getMinEntry() {
-        Entry min = this.entries.get(0);
-        for (Entry entry : this.entries) {
-            if (entry.getY() < min.getY()) {
-                min = entry;
-            }
-        }
-        return min;
-    }
-
-    @Override
-    public String getPointLabel(Entry entry) {
-        if (entry.equals(maxEntry) || entry.equals(minEntry)) {
-            return format.format(entry.getY());
-        } else {
-            return "";
-        }
+        NumberFormat format = NumberFormat.getCurrencyInstance(Locale.US);
+        format.setCurrency(Currency.getInstance("USD"));
+        format.setMinimumFractionDigits(fractionDigits);
+        format.setMaximumFractionDigits(fractionDigits);
+        return format.format(price);
     }
 
 }
+

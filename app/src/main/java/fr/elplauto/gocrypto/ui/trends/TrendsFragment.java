@@ -333,7 +333,7 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
 
     @Override
     public void onCryptoClick(int position) {
-        Crypto crypto = this.displayedList.get(0);
+        Crypto crypto = this.displayedList.get(position);
         Intent intent = new Intent(getContext(), CryptoDetailsActivity.class);
         Bundle b = new Bundle();
         b.putInt("crypto_id", crypto.getId());
