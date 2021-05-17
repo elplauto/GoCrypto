@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +13,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.github.mikephil.charting.charts.LineChart;
@@ -34,12 +35,15 @@ import java.util.Locale;
 import fr.elplauto.gocrypto.R;
 import fr.elplauto.gocrypto.api.WalletService;
 import fr.elplauto.gocrypto.database.DBManager;
+import fr.elplauto.gocrypto.model.Crypto;
+import fr.elplauto.gocrypto.model.CryptoInWallet;
+import fr.elplauto.gocrypto.model.CryptoMerge;
 import fr.elplauto.gocrypto.model.History;
+import fr.elplauto.gocrypto.ui.trends.CryptoAdapter;
 import fr.elplauto.gocrypto.utils.SessionManager;
 import fr.elplauto.gocrypto.model.Wallet;
-import fr.elplauto.gocrypto.utils.PriceFormatter;
 
-public class WalletFragment extends Fragment implements WalletService.WalletServiceCallbackListener {
+public class WalletFragment extends Fragment implements WalletService.WalletServiceCallbackListener, CryptoWalletAdapter.OnCryptoWalletClickListener {
 
     private static final String TAG = "WalletFragment";
     private DBManager dbManager;
@@ -54,6 +58,7 @@ public class WalletFragment extends Fragment implements WalletService.WalletServ
     WalletService.WalletServiceCallbackListener self = this;
     TextView maxAmount;
     TextView minAmount;
+    RecyclerView recyclerView;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -82,6 +87,10 @@ public class WalletFragment extends Fragment implements WalletService.WalletServ
                 displayChart7d();
             }
         });
+
+        recyclerView = root.findViewById(R.id.recycler_view_wallet);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(root.getContext()));
 
         String chartDisplayPeriod = getContext().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE).getString("chartPeriod", "1h");
         if (chartDisplayPeriod.equals("1h")) {
@@ -167,6 +176,7 @@ public class WalletFragment extends Fragment implements WalletService.WalletServ
             public void run() {
                 wallet_total_amount.setText(formattedPrice);
                 drawChart(wallet);
+                displayCrypto(wallet.getCrypto());
                 swipeContainer.setRefreshing(false);
             }
         });
@@ -213,7 +223,7 @@ public class WalletFragment extends Fragment implements WalletService.WalletServ
     private void updatePercentChange(List<History> histories) {
         Double oldValue = histories.get(0).getValue();
         Double newValue = histories.get(histories.size() - 1).getValue();
-        final Double percentChange = ((oldValue / newValue) - 1) * 100;
+        final double percentChange = ((oldValue / newValue) - 1) * 100;
         final String progressionPercent = String.format("%.02f", Math.abs(percentChange)) + "%";
         Comparator<History> comparator = new Comparator<History>() {
             @Override
@@ -241,5 +251,16 @@ public class WalletFragment extends Fragment implements WalletService.WalletServ
 
     }
 
+    private void displayCrypto(List<CryptoInWallet> cryptoList) {
+        List<CryptoMerge> cryptoMergeList = new ArrayList<>();
+        //TODO init cryptoMergeList with cryptoList
+        CryptoWalletAdapter mAdapter = new CryptoWalletAdapter(cryptoMergeList, this, getContext());
+        recyclerView.setAdapter(mAdapter);
+    }
+
+    @Override
+    public void onCryptoClick(int position) {
+
+    }
 }
 
