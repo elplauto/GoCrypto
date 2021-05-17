@@ -8,15 +8,11 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.List;
-
 import fr.elplauto.gocrypto.api.LoginService;
-import fr.elplauto.gocrypto.model.Crypto;
 import fr.elplauto.gocrypto.model.LoginStatus;
-import fr.elplauto.gocrypto.model.SessionManager;
+import fr.elplauto.gocrypto.utils.SessionManager;
 
 
 public class LoginActivity extends AppCompatActivity implements LoginService.LoginServiceCallbackListener {
@@ -75,7 +71,7 @@ public class LoginActivity extends AppCompatActivity implements LoginService.Log
             public void onClick(View v) {
             String username = usernameEditText.getText().toString();
             String password = pwdEditText.getText().toString();
-            LoginService.loginOrRegister(self, username, password);
+            LoginService.loginOrRegister(getApplicationContext(), self, username, password);
             }
         });
 

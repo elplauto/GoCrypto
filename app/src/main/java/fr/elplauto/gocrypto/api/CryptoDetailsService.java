@@ -2,6 +2,7 @@ package fr.elplauto.gocrypto.api;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -12,6 +13,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.List;
 
+import fr.elplauto.gocrypto.R;
 import fr.elplauto.gocrypto.model.Crypto;
 import fr.elplauto.gocrypto.model.DataSearchAllCrypto;
 import okhttp3.Call;
@@ -23,10 +25,11 @@ import okhttp3.Response;
 public class CryptoDetailsService {
 
     private static final String TAG = "CryptoDetailsService";
-    public static void getCryptoDetails(final CryptoDetailsServiceCallbackListener cryptoDetailsServiceCallbackListener, Integer cryptoId) {
+    public static void getCryptoDetails(Context context, final CryptoDetailsServiceCallbackListener cryptoDetailsServiceCallbackListener, Integer cryptoId) {
 
         OkHttpClient client = new OkHttpClient();
-        String url = "https://go-crypto.herokuapp.com/crypto?id=" + cryptoId;
+        String url = context.getResources().getString(R.string.server_base_url);
+        url = url.concat("/crypto?id=" + cryptoId);
         Log.d(TAG, "crypto details url : " + url);
 
         Request request = new Request.Builder().url(url).build();

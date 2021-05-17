@@ -1,5 +1,7 @@
 package fr.elplauto.gocrypto.api;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -10,6 +12,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.List;
 
+import fr.elplauto.gocrypto.R;
 import fr.elplauto.gocrypto.model.Crypto;
 import fr.elplauto.gocrypto.model.DataSearchAllCrypto;
 import fr.elplauto.gocrypto.model.LoginStatus;
@@ -24,10 +27,11 @@ import okhttp3.Response;
 public class LoginService {
 
     private static final String TAG = "LoginService";
-    public static void loginOrRegister(final LoginServiceCallbackListener loginServiceCallbackListener, String username, String password) {
+    public static void loginOrRegister(Context context, final LoginServiceCallbackListener loginServiceCallbackListener, String username, String password) {
 
         OkHttpClient client = new OkHttpClient();
-        String url = "https://go-crypto.herokuapp.com/loginOrRegister?username=" + username + "&password=" + password;
+        String url = context.getResources().getString(R.string.server_base_url);
+        url = url.concat("/loginOrRegister?username=" + username + "&password=" + password);
         Log.d(TAG, "login url : " + url);
 
         RequestBody formBody = new FormBody.Builder().build();

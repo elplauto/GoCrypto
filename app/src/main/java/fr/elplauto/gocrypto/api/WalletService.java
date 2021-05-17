@@ -1,5 +1,7 @@
 package fr.elplauto.gocrypto.api;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -9,6 +11,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
+import fr.elplauto.gocrypto.R;
 import fr.elplauto.gocrypto.model.LoginStatus;
 import fr.elplauto.gocrypto.model.Wallet;
 import okhttp3.Call;
@@ -22,10 +25,11 @@ import okhttp3.Response;
 public class WalletService {
 
     private static final String TAG = "WalletService";
-    public static void getWallet(final WalletServiceCallbackListener walletServiceCallbackListener, String username) {
+    public static void getWallet(Context context, final WalletServiceCallbackListener walletServiceCallbackListener, String username) {
 
         OkHttpClient client = new OkHttpClient();
-        String url = "https://go-crypto.herokuapp.com/wallet?username=" + username;
+        String url = context.getResources().getString(R.string.server_base_url);
+        url = url.concat("/wallet?username=" + username);
         Log.d(TAG, "wallet url : " + url);
 
         Request request = new Request.Builder().url(url).build();

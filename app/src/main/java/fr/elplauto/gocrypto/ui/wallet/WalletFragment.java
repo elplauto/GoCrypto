@@ -4,14 +4,17 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
@@ -19,10 +22,11 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.ValueFormatter;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
@@ -31,7 +35,7 @@ import fr.elplauto.gocrypto.R;
 import fr.elplauto.gocrypto.api.WalletService;
 import fr.elplauto.gocrypto.database.DBManager;
 import fr.elplauto.gocrypto.model.History;
-import fr.elplauto.gocrypto.model.SessionManager;
+import fr.elplauto.gocrypto.utils.SessionManager;
 import fr.elplauto.gocrypto.model.Wallet;
 import fr.elplauto.gocrypto.utils.PriceFormatter;
 
@@ -43,7 +47,13 @@ public class WalletFragment extends Fragment implements WalletService.WalletServ
     TextView wallet_total_amount;
     TextView btn_1h;
     TextView btn_7d;
+    ImageView arrowUpDown;
+    TextView percentChangeTextView;
     Wallet wallet;
+    private SwipeRefreshLayout swipeContainer;
+    WalletService.WalletServiceCallbackListener self = this;
+    TextView maxAmount;
+    TextView minAmount;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -51,8 +61,13 @@ public class WalletFragment extends Fragment implements WalletService.WalletServ
         View root = inflater.inflate(R.layout.fragment_wallet, container, false);
         chart = root.findViewById(R.id.chartWallet);
         wallet_total_amount = root.findViewById(R.id.wallet_total_amount);
+        arrowUpDown = root.findViewById(R.id.arrowUpDown);
+        percentChangeTextView = root.findViewById(R.id.percentChangeTextView);
+        swipeContainer = root.findViewById(R.id.swipeWallet);
         btn_1h = root.findViewById(R.id.btn_1h_wallet);
         btn_7d = root.findViewById(R.id.btn_7d_wallet);
+        maxAmount = root.findViewById(R.id.maxAmount);
+        minAmount = root.findViewById(R.id.minAmount);
 
         btn_1h.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,11 +90,24 @@ public class WalletFragment extends Fragment implements WalletService.WalletServ
             btn_7d.setTextColor(ContextCompat.getColor(getContext(), R.color.blue));
         }
 
-        dbManager = new DBManager(getContext());
-
         SessionManager sessionManager = SessionManager.getInstance(getContext());
-        String username = sessionManager.getUsername();
-        WalletService.getWallet(this, username);
+        final String username = sessionManager.getUsername();
+
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                WalletService.getWallet(getContext(), self, username);
+            }
+        });
+
+        swipeContainer.post(new Runnable() {
+            @Override
+            public void run() {
+                swipeContainer.setRefreshing(true);
+                WalletService.getWallet(getContext(), self, username);
+            }
+        });
+
 
         return root;
     }
@@ -94,17 +122,19 @@ public class WalletFragment extends Fragment implements WalletService.WalletServ
             historyList = wallet.getHistory7d();
         }
 
+        updatePercentChange(historyList);
+
         List <Entry> entries = new ArrayList<>();
         for (int i = 0; i < historyList.size(); i++) {
             int reverseIndex = historyList.size() - 1 - i;
             float value = historyList.get(reverseIndex).getValue().floatValue();
             entries.add(new Entry(i, value));
         }
-        LineDataSet dataSet = new LineDataSet(entries, "Label"); // add entries to dataset
-        dataSet.setValueFormatter(new PriceFormatter(entries));
+        LineDataSet dataSet = new LineDataSet(entries, "Label");
         dataSet.setCircleColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
         dataSet.setColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
         dataSet.setDrawCircles(false);
+        dataSet.setDrawValues(false);
         LineData lineData = new LineData(dataSet);
         lineData.setValueTextColor(Color.BLACK);
         lineData.setValueTextSize(10f);
@@ -121,20 +151,25 @@ public class WalletFragment extends Fragment implements WalletService.WalletServ
         leftAxis.setDrawGridLines(false);
         YAxis rightAxis = chart.getAxisRight();
         rightAxis.setDrawAxisLine(false);
-        rightAxis.setDrawLabels(false);
-        rightAxis.setDrawGridLines(false);
         chart.getLegend().setEnabled(false);
-        chart.invalidate(); // refresh
+        chart.setVisibleXRange(entries.size() - 1, entries.size() - 1);
+        chart.invalidate();
         chart.notifyDataSetChanged();
     }
 
     @Override
-    public void onWalletServiceCallback(Wallet wallet) {
+    public void onWalletServiceCallback(final Wallet wallet) {
         this.wallet = wallet;
         Double price = wallet.getHistory1h().get(0).getValue();
-        String formattedPrice = formatPrice(price);
-        wallet_total_amount.setText(formattedPrice);
-        drawChart(wallet);
+        final String formattedPrice = formatPrice(price);
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                wallet_total_amount.setText(formattedPrice);
+                drawChart(wallet);
+                swipeContainer.setRefreshing(false);
+            }
+        });
     }
 
     private void displayChart1h() {
@@ -173,6 +208,37 @@ public class WalletFragment extends Fragment implements WalletService.WalletServ
         format.setMinimumFractionDigits(fractionDigits);
         format.setMaximumFractionDigits(fractionDigits);
         return format.format(price);
+    }
+
+    private void updatePercentChange(List<History> histories) {
+        Double oldValue = histories.get(0).getValue();
+        Double newValue = histories.get(histories.size() - 1).getValue();
+        final Double percentChange = ((oldValue / newValue) - 1) * 100;
+        final String progressionPercent = String.format("%.02f", Math.abs(percentChange)) + "%";
+        Comparator<History> comparator = new Comparator<History>() {
+            @Override
+            public int compare(History o1, History o2) {
+                return (o1.getValue().compareTo(o2.getValue()));
+            }
+        };
+
+        final Double maxValue = Collections.max(histories, comparator).getValue();
+        final Double minValue = Collections.min(histories, comparator).getValue();
+
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                percentChangeTextView.setText(progressionPercent);
+                if (percentChange >= 0) {
+                    arrowUpDown.setImageResource(R.drawable.up_arrow);
+                } else {
+                    arrowUpDown.setImageResource(R.drawable.down_arrow);
+                }
+                minAmount.setText("MIN " + formatPrice(minValue));
+                maxAmount.setText("MAX " + formatPrice(maxValue));
+            }
+        });
+
     }
 
 }

@@ -1,5 +1,7 @@
 package fr.elplauto.gocrypto.api;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -10,6 +12,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.List;
 
+import fr.elplauto.gocrypto.R;
 import fr.elplauto.gocrypto.model.Crypto;
 import fr.elplauto.gocrypto.model.DataSearchAllCrypto;
 import fr.elplauto.gocrypto.model.Leaderboard;
@@ -22,10 +25,11 @@ import okhttp3.Response;
 public class LeaderboardService {
 
     private static final String TAG = "LeaderboardService";
-    public static void getLeaderboard(final LeaderboardServiceCallbackListener leaderboardServiceCallbackListener) {
+    public static void getLeaderboard(Context context, final LeaderboardServiceCallbackListener leaderboardServiceCallbackListener) {
 
         OkHttpClient client = new OkHttpClient();
-        String url = "https://go-crypto.herokuapp.com/leaderboard";
+        String url = context.getResources().getString(R.string.server_base_url);
+        url = url.concat("/leaderboard");
         Log.d(TAG, "leaderboard url : " + url);
 
         Request request = new Request.Builder().url(url).build();

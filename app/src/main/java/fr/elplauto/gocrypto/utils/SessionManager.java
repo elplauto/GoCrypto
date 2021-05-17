@@ -1,9 +1,9 @@
-package fr.elplauto.gocrypto.model;
+package fr.elplauto.gocrypto.utils;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.widget.Toast;
+import android.util.Log;
 
 import fr.elplauto.gocrypto.LoginActivity;
 import fr.elplauto.gocrypto.MainActivity;
@@ -11,6 +11,7 @@ import fr.elplauto.gocrypto.R;
 
 public class SessionManager {
 
+    private static final String TAG = "SesionManager";
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
     private Context context;
@@ -31,6 +32,7 @@ public class SessionManager {
     }
 
     public void createLoginSession(String username) {
+        Log.d(TAG, "username");
         editor.putBoolean("isLoggedIn", true);
         editor.putString("username", username);
         editor.commit();

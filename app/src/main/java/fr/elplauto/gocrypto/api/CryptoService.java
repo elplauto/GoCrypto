@@ -1,6 +1,7 @@
 package fr.elplauto.gocrypto.api;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -11,6 +12,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.List;
 
+import fr.elplauto.gocrypto.R;
 import fr.elplauto.gocrypto.model.Crypto;
 import fr.elplauto.gocrypto.model.DataSearchAllCrypto;
 import okhttp3.Call;
@@ -22,10 +24,11 @@ import okhttp3.Response;
 public class CryptoService {
 
     private static final String TAG = "CryptoService";
-    public static void loadAllCrypto(final CryptoServiceCallbackListener cryptoServiceCallbackListener) {
+    public static void loadAllCrypto(Context context, final CryptoServiceCallbackListener cryptoServiceCallbackListener) {
 
         OkHttpClient client = new OkHttpClient();
-        String url = "https://go-crypto.herokuapp.com/crypto";
+        String url = context.getResources().getString(R.string.server_base_url);
+        url = url.concat("/crypto");
         Log.d(TAG, "crypto url : " + url);
 
         Request request = new Request.Builder().url(url).build();

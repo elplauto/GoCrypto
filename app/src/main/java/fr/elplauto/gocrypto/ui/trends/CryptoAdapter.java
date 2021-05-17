@@ -50,8 +50,8 @@ public class CryptoAdapter extends RecyclerView.Adapter<CryptoAdapter.ViewHolder
         Crypto crypto = cryptoList.get(position);
         holder.textViewCryptoName.setText(crypto.getName());
         holder.textViewCryptoShortName.setText(crypto.getSymbol());
-        Double percentChange1h = crypto.getPercentChange(this.percentChangePreference);
-        String progressionPercent = String.format("%.02f", Math.abs(percentChange1h)) + "%";
+        Double percentChange = crypto.getPercentChange(this.percentChangePreference);
+        String progressionPercent = String.format("%.02f", Math.abs(percentChange)) + "%";
         holder.textViewProgressionPercent.setText(progressionPercent);
         String priceInDollar = formatPrice(crypto.getPrice());
         holder.textViewPriceInDollar.setText(priceInDollar);
@@ -59,7 +59,7 @@ public class CryptoAdapter extends RecyclerView.Adapter<CryptoAdapter.ViewHolder
         String imgUrl = "https://s2.coinmarketcap.com/static/img/coins/64x64/"+ crypto.getId() +".png";
         Picasso.get().load(imgUrl).into(holder.imageViewIconCrypto);
 
-        if (percentChange1h >= 0) {
+        if (percentChange >= 0) {
             holder.imageViewUpDown.setImageResource(R.drawable.up_arrow);
         } else {
             holder.imageViewUpDown.setImageResource(R.drawable.down_arrow);

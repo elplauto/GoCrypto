@@ -6,4 +6,5 @@
     <string name="title_account">Account</string>
     <string name="preference_file_key">fr.elplauto.gocrypto.PREFERENCES</string>
     <string name="action_sign_in">Sign in or register</string>
+    <string name="server_base_url">https://crypto.florianplaut.tk</string>
 </resources>
