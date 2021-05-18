@@ -4,7 +4,9 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import fr.elplauto.gocrypto.model.Crypto;
 import fr.elplauto.gocrypto.model.Wallet;
@@ -34,5 +36,14 @@ public class DBManager {
 
     public List<Crypto> getAllCrypto() {
         return dbHelper.getAllCrypto();
+    }
+
+    public Map<Integer, Crypto> getCryptoMap() {
+        List<Crypto> cryptoList = dbHelper.getAllCrypto();
+        Map<Integer, Crypto> map = new HashMap<>();
+        for (Crypto crypto : cryptoList) {
+            map.put(crypto.getId(), crypto);
+        }
+        return map;
     }
 }

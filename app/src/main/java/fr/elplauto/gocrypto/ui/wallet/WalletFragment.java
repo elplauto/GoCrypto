@@ -31,6 +31,7 @@ import java.util.Comparator;
 import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import fr.elplauto.gocrypto.R;
 import fr.elplauto.gocrypto.api.WalletService;
@@ -91,6 +92,7 @@ public class WalletFragment extends Fragment implements WalletService.WalletServ
         recyclerView = root.findViewById(R.id.recycler_view_wallet);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(root.getContext()));
+        recyclerView.setNestedScrollingEnabled(false);
 
         String chartDisplayPeriod = getContext().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE).getString("chartPeriod", "1h");
         if (chartDisplayPeriod.equals("1h")) {
@@ -116,6 +118,8 @@ public class WalletFragment extends Fragment implements WalletService.WalletServ
                 WalletService.getWallet(getContext(), self, username);
             }
         });
+
+        dbManager = new DBManager(getContext());
 
 
         return root;
@@ -253,7 +257,15 @@ public class WalletFragment extends Fragment implements WalletService.WalletServ
 
     private void displayCrypto(List<CryptoInWallet> cryptoList) {
         List<CryptoMerge> cryptoMergeList = new ArrayList<>();
-        //TODO init cryptoMergeList with cryptoList
+        Map<Integer, Crypto> map = dbManager.getCryptoMap();
+        for (int i = 0; i < 20; i++) {
+            for (CryptoInWallet cryptoInWallet : cryptoList) {
+                CryptoMerge cryptoMerge = new CryptoMerge(map.get(cryptoInWallet.getId()), cryptoInWallet);
+                cryptoMergeList.add(cryptoMerge);
+            }
+        }
+
+
         CryptoWalletAdapter mAdapter = new CryptoWalletAdapter(cryptoMergeList, this, getContext());
         recyclerView.setAdapter(mAdapter);
     }

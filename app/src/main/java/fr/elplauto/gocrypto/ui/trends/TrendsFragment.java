@@ -517,7 +517,6 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
                 List<Crypto> filteredList = applyAllFiltersToList(cryptoList);
                 displayCryptoList(filteredList);
                 swipeContainer.setRefreshing(false);
-
             }
         });
     }
