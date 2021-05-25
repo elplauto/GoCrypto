@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import fr.elplauto.gocrypto.CryptoDetailsActivity;
 import fr.elplauto.gocrypto.R;
 import fr.elplauto.gocrypto.TransactionsActivity;
 import fr.elplauto.gocrypto.api.WalletService;
@@ -63,6 +64,8 @@ public class WalletFragment extends Fragment implements WalletService.WalletServ
     TextView minAmount;
     RecyclerView recyclerView;
     Button btnTransaction;
+    List<CryptoMerge> cryptoMergeList;
+    TextView usdInWallet;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -77,6 +80,7 @@ public class WalletFragment extends Fragment implements WalletService.WalletServ
         btn_7d = root.findViewById(R.id.btn_7d_wallet);
         maxAmount = root.findViewById(R.id.maxAmount);
         minAmount = root.findViewById(R.id.minAmount);
+        usdInWallet = root.findViewById(R.id.usdInWallet);
         btnTransaction = root.findViewById(R.id.btn_transactions);
         btnTransaction.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -190,6 +194,7 @@ public class WalletFragment extends Fragment implements WalletService.WalletServ
             public void run() {
                 wallet_total_amount.setText(formattedPrice);
                 drawChart(wallet);
+                usdInWallet.setText(MyNumberFormatter.formatNumber(wallet.getUsd()));
                 displayCrypto(wallet.getCrypto());
                 swipeContainer.setRefreshing(false);
             }
@@ -252,18 +257,27 @@ public class WalletFragment extends Fragment implements WalletService.WalletServ
     private void displayCrypto(List<CryptoInWallet> cryptoList) {
         List<CryptoMerge> cryptoMergeList = new ArrayList<>();
         Map<Integer, Crypto> map = dbManager.getCryptoMap();
-        for (CryptoInWallet cryptoInWallet : cryptoList) {
-            CryptoMerge cryptoMerge = new CryptoMerge(map.get(cryptoInWallet.getId()), cryptoInWallet);
-            cryptoMergeList.add(cryptoMerge);
+        for (int i = 0; i < 20; i++) {
+            for (CryptoInWallet cryptoInWallet : cryptoList) {
+                CryptoMerge cryptoMerge = new CryptoMerge(map.get(cryptoInWallet.getId()), cryptoInWallet);
+                cryptoMergeList.add(cryptoMerge);
+            }
         }
 
+
+        this.cryptoMergeList = cryptoMergeList;
         CryptoWalletAdapter mAdapter = new CryptoWalletAdapter(cryptoMergeList, this, getContext());
         recyclerView.setAdapter(mAdapter);
     }
 
     @Override
     public void onCryptoClick(int position) {
-
+        CryptoMerge crypto = this.cryptoMergeList.get(position);
+        Intent intent = new Intent(getContext(), CryptoDetailsActivity.class);
+        Bundle b = new Bundle();
+        b.putInt("crypto_id", crypto.getCrypto().getId());
+        intent.putExtras(b);
+        startActivity(intent);
     }
 
     void displayTransactionsActivity() {
