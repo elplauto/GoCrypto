@@ -18,6 +18,7 @@ import java.util.Locale;
 import fr.elplauto.gocrypto.R;
 import fr.elplauto.gocrypto.api.WalletService;
 import fr.elplauto.gocrypto.model.Wallet;
+import fr.elplauto.gocrypto.utils.MyNumberFormatter;
 import fr.elplauto.gocrypto.utils.SessionManager;
 
 public class AccountFragment extends Fragment implements WalletService.WalletServiceCallbackListener{
@@ -57,25 +58,9 @@ public class AccountFragment extends Fragment implements WalletService.WalletSer
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                String text = formatPrice(wallet.getHistory1h().get(0).getValue());
+                String text = MyNumberFormatter.decimalPriceFormat(wallet.getHistory1h().get(0).getValue());
                 textViewUSD.setText(text);
             }
         });
-    }
-
-    private String formatPrice(Double price) {
-        int fractionDigits = 0;
-        double inv = 1d / price;
-        while (inv > 0.1) {
-            inv = inv / 10d;
-            fractionDigits = fractionDigits + 1;
-        }
-        fractionDigits += 2;
-
-        NumberFormat format = NumberFormat.getCurrencyInstance(Locale.US);
-        format.setCurrency(Currency.getInstance("USD"));
-        format.setMinimumFractionDigits(fractionDigits);
-        format.setMaximumFractionDigits(fractionDigits);
-        return format.format(price);
     }
 }

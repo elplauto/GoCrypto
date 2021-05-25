@@ -20,6 +20,7 @@ import java.util.Locale;
 import fr.elplauto.gocrypto.R;
 import fr.elplauto.gocrypto.model.Crypto;
 import fr.elplauto.gocrypto.model.CryptoMerge;
+import fr.elplauto.gocrypto.utils.MyNumberFormatter;
 
 public class CryptoWalletAdapter extends RecyclerView.Adapter<CryptoWalletAdapter.ViewHolder> {
 
@@ -48,9 +49,10 @@ public class CryptoWalletAdapter extends RecyclerView.Adapter<CryptoWalletAdapte
         CryptoMerge cryptoMerge = cryptoList.get(position);
         holder.textViewCryptoName.setText(cryptoMerge.getCrypto().getName());
         holder.textViewCryptoShortName.setText(cryptoMerge.getCrypto().getSymbol());
-        String unitPrice = formatPrice(cryptoMerge.getCrypto().getPrice());
+        String unitPrice = MyNumberFormatter.decimalPriceFormat(cryptoMerge.getCrypto().getPrice());
         holder.textViewUnitPrice.setText(unitPrice);
-        holder.textViewAmount.setText(cryptoMerge.getCryptoInWallet().getAmount().toString());
+        String amount = MyNumberFormatter.formatNumber(cryptoMerge.getCryptoInWallet().getAmount());
+        holder.textViewAmount.setText(amount);
 
         String imgUrl = "https://s2.coinmarketcap.com/static/img/coins/64x64/"+ cryptoMerge.getCrypto().getId() +".png";
         Picasso.get().load(imgUrl).into(holder.imageViewIconCrypto);
@@ -91,19 +93,4 @@ public class CryptoWalletAdapter extends RecyclerView.Adapter<CryptoWalletAdapte
         void onCryptoClick(int position);
     }
 
-    private String formatPrice(Double price) {
-        int fractionDigits = 0;
-        double inv = 1d / price;
-        while (inv > 0.1) {
-            inv = inv / 10d;
-            fractionDigits = fractionDigits + 1;
-        }
-        fractionDigits += 2;
-
-        NumberFormat format = NumberFormat.getCurrencyInstance(Locale.US);
-        format.setCurrency(Currency.getInstance("USD"));
-        format.setMinimumFractionDigits(fractionDigits);
-        format.setMaximumFractionDigits(fractionDigits);
-        return format.format(price);
-    }
 }

@@ -3,7 +3,9 @@ package fr.elplauto.gocrypto.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class CryptoInWallet {
+import java.io.Serializable;
+
+public class CryptoInWallet implements Serializable {
 
     @SerializedName("id")
     @Expose

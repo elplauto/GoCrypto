@@ -440,7 +440,8 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
     private List<Crypto> filterCryptoListWithSearch(List<Crypto> cryptoList, String filter) {
         List<Crypto> filteredList = new ArrayList<>();
         for (Crypto crypto : cryptoList) {
-            if (crypto.getName().toLowerCase().contains(filter.toLowerCase())) {
+            if (crypto.getName().toLowerCase().contains(filter.toLowerCase())
+                    || crypto.getSymbol().toLowerCase().contains(filter.toLowerCase())) {
                 filteredList.add(crypto);
             }
         }

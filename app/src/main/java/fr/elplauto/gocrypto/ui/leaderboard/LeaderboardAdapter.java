@@ -20,6 +20,7 @@ import java.util.Locale;
 
 import fr.elplauto.gocrypto.R;
 import fr.elplauto.gocrypto.model.LeaderboardRaw;
+import fr.elplauto.gocrypto.utils.MyNumberFormatter;
 
 public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.ViewHolder> {
 
@@ -48,7 +49,7 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
         LeaderboardRaw raw = leaderboardRaws.get(position);
         holder.textViewRank.setText(String.valueOf(position + 1) + ".");
         holder.textViewUsername.setText(raw.getUsername());
-        String priceInDollar = formatPrice(raw.getUsd());
+        String priceInDollar = MyNumberFormatter.decimalPriceFormat(raw.getUsd());
         holder.textViewUsd.setText(priceInDollar);
 
         if (raw.getUsername().equals(username)) {
@@ -88,19 +89,4 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
         void onUserClick(int position);
     }
 
-    private String formatPrice(Double price) {
-        int fractionDigits = 0;
-        double inv = 1d / price;
-        while (inv > 0.1) {
-            inv = inv / 10d;
-            fractionDigits = fractionDigits + 1;
-        }
-        fractionDigits += 2;
-
-        NumberFormat format = NumberFormat.getCurrencyInstance(Locale.US);
-        format.setCurrency(Currency.getInstance("USD"));
-        format.setMinimumFractionDigits(fractionDigits);
-        format.setMaximumFractionDigits(fractionDigits);
-        return format.format(price);
-    }
 }

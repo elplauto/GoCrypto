@@ -20,6 +20,7 @@ import java.util.Locale;
 
 import fr.elplauto.gocrypto.R;
 import fr.elplauto.gocrypto.model.Crypto;
+import fr.elplauto.gocrypto.utils.MyNumberFormatter;
 
 public class CryptoAdapter extends RecyclerView.Adapter<CryptoAdapter.ViewHolder> {
 
@@ -53,7 +54,7 @@ public class CryptoAdapter extends RecyclerView.Adapter<CryptoAdapter.ViewHolder
         Double percentChange = crypto.getPercentChange(this.percentChangePreference);
         String progressionPercent = String.format("%.02f", Math.abs(percentChange)) + "%";
         holder.textViewProgressionPercent.setText(progressionPercent);
-        String priceInDollar = formatPrice(crypto.getPrice());
+        String priceInDollar = MyNumberFormatter.decimalPriceFormat(crypto.getPrice());
         holder.textViewPriceInDollar.setText(priceInDollar);
 
         String imgUrl = "https://s2.coinmarketcap.com/static/img/coins/64x64/"+ crypto.getId() +".png";
@@ -103,21 +104,5 @@ public class CryptoAdapter extends RecyclerView.Adapter<CryptoAdapter.ViewHolder
 
     public interface OnCryptoClickListener {
         void onCryptoClick(int position);
-    }
-
-    private String formatPrice(Double price) {
-        int fractionDigits = 0;
-        double inv = 1d / price;
-        while (inv > 0.1) {
-            inv = inv / 10d;
-            fractionDigits = fractionDigits + 1;
-        }
-        fractionDigits += 2;
-
-        NumberFormat format = NumberFormat.getCurrencyInstance(Locale.US);
-        format.setCurrency(Currency.getInstance("USD"));
-        format.setMinimumFractionDigits(fractionDigits);
-        format.setMaximumFractionDigits(fractionDigits);
-        return format.format(price);
     }
 }

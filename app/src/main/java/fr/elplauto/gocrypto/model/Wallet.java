@@ -1,11 +1,12 @@
 package fr.elplauto.gocrypto.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Wallet {
+public class Wallet implements Serializable {
 
     @SerializedName("USD")
     @Expose
@@ -19,6 +20,9 @@ public class Wallet {
     @SerializedName("history_7d")
     @Expose
     private List<History> history7d = null;
+    @SerializedName("transactions")
+    @Expose
+    private List<Transaction> transactions = null;
 
     public Wallet() {
         this.history1h = new ArrayList<>();
@@ -55,5 +59,13 @@ public class Wallet {
 
     public void setHistory7d(List<History> history7d) {
         this.history7d = history7d;
+    }
+
+    public List<Transaction> getTransactions() {
+        return transactions;
+    }
+
+    public void setTransactions(List<Transaction> transactions) {
+        this.transactions = transactions;
     }
 }

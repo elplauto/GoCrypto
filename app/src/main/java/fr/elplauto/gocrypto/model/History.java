@@ -3,7 +3,9 @@ package fr.elplauto.gocrypto.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class History {
+import java.io.Serializable;
+
+public class History implements Serializable {
 
     @SerializedName("timestamp")
     @Expose

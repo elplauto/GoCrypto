@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -32,10 +33,10 @@ import java.util.Locale;
 
 import fr.elplauto.gocrypto.api.CryptoDetailsService;
 import fr.elplauto.gocrypto.api.CryptoDetailsService.CryptoDetailsServiceCallbackListener;
-import fr.elplauto.gocrypto.api.WalletService;
 import fr.elplauto.gocrypto.model.Crypto;
 import fr.elplauto.gocrypto.model.History;
 import fr.elplauto.gocrypto.model.Wallet;
+import fr.elplauto.gocrypto.utils.MyNumberFormatter;
 
 public class CryptoDetailsActivity extends AppCompatActivity implements CryptoDetailsServiceCallbackListener {
 
@@ -128,7 +129,7 @@ public class CryptoDetailsActivity extends AppCompatActivity implements CryptoDe
                 NumberFormat format = NumberFormat.getCurrencyInstance(Locale.US);
                 format.setCurrency(Currency.getInstance("USD"));
                 Double price = crypto.getHistory1h().get(0).getValue();
-                String formattedPrice = formatPrice(price);
+                String formattedPrice = MyNumberFormatter.decimalPriceFormat(price);
                 cryptoPrice.setText(formattedPrice);
                 drawChart(crypto);
                 swipeContainer.setRefreshing(false);
@@ -206,20 +207,15 @@ public class CryptoDetailsActivity extends AppCompatActivity implements CryptoDe
         chart.notifyDataSetChanged();
     }
 
-    private String formatPrice(Double price) {
-        int fractionDigits = 0;
-        double inv = 1d / price;
-        while (inv > 0.1) {
-            inv = inv / 10d;
-            fractionDigits = fractionDigits + 1;
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        fractionDigits += 2;
-
-        NumberFormat format = NumberFormat.getCurrencyInstance(Locale.US);
-        format.setCurrency(Currency.getInstance("USD"));
-        format.setMinimumFractionDigits(fractionDigits);
-        format.setMaximumFractionDigits(fractionDigits);
-        return format.format(price);
     }
 
     private void updatePercentChange(List<History> histories) {
@@ -247,8 +243,8 @@ public class CryptoDetailsActivity extends AppCompatActivity implements CryptoDe
                     arrowUpDown.setImageResource(R.drawable.down_arrow);
                 }
 
-                min_price.setText("MIN " + formatPrice(minValue));
-                max_price.setText("MAX " + formatPrice(maxValue));
+                min_price.setText("MIN " + MyNumberFormatter.decimalPriceFormat(minValue));
+                max_price.setText("MAX " + MyNumberFormatter.decimalPriceFormat(maxValue));
             }
         });
 

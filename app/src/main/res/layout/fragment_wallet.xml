@@ -16,7 +16,23 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:theme="@style/MyThemeOverlay_Toolbar"
-            app:title="@string/title_wallet" />
+            app:title="@string/title_wallet">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:id="@+id/btn_transactions"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginEnd="@dimen/activity_horizontal_margin"
+                android:background="@drawable/outline_swap_horiz_24"
+                android:layout_gravity="end" />
+
+        </com.google.android.material.appbar.MaterialToolbar>
+
+
 
     </com.google.android.material.appbar.AppBarLayout>
 

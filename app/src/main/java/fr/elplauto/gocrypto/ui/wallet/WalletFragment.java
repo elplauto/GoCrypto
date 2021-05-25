@@ -1,12 +1,14 @@
 package fr.elplauto.gocrypto.ui.wallet;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -24,23 +26,23 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Currency;
+import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import fr.elplauto.gocrypto.R;
+import fr.elplauto.gocrypto.TransactionsActivity;
 import fr.elplauto.gocrypto.api.WalletService;
 import fr.elplauto.gocrypto.database.DBManager;
 import fr.elplauto.gocrypto.model.Crypto;
 import fr.elplauto.gocrypto.model.CryptoInWallet;
 import fr.elplauto.gocrypto.model.CryptoMerge;
 import fr.elplauto.gocrypto.model.History;
-import fr.elplauto.gocrypto.ui.trends.CryptoAdapter;
+import fr.elplauto.gocrypto.model.Transaction;
+import fr.elplauto.gocrypto.utils.MyNumberFormatter;
 import fr.elplauto.gocrypto.utils.SessionManager;
 import fr.elplauto.gocrypto.model.Wallet;
 
@@ -60,6 +62,7 @@ public class WalletFragment extends Fragment implements WalletService.WalletServ
     TextView maxAmount;
     TextView minAmount;
     RecyclerView recyclerView;
+    Button btnTransaction;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -74,6 +77,13 @@ public class WalletFragment extends Fragment implements WalletService.WalletServ
         btn_7d = root.findViewById(R.id.btn_7d_wallet);
         maxAmount = root.findViewById(R.id.maxAmount);
         minAmount = root.findViewById(R.id.minAmount);
+        btnTransaction = root.findViewById(R.id.btn_transactions);
+        btnTransaction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                displayTransactionsActivity();
+            }
+        });
 
         btn_1h.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -174,7 +184,7 @@ public class WalletFragment extends Fragment implements WalletService.WalletServ
     public void onWalletServiceCallback(final Wallet wallet) {
         this.wallet = wallet;
         Double price = wallet.getHistory1h().get(0).getValue();
-        final String formattedPrice = formatPrice(price);
+        final String formattedPrice = MyNumberFormatter.decimalPriceFormat(price);
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -208,22 +218,6 @@ public class WalletFragment extends Fragment implements WalletService.WalletServ
         }
     }
 
-    private String formatPrice(Double price) {
-        int fractionDigits = 0;
-        double inv = 1d / price;
-        while (inv > 0.1) {
-            inv = inv / 10d;
-            fractionDigits = fractionDigits + 1;
-        }
-        fractionDigits += 2;
-
-        NumberFormat format = NumberFormat.getCurrencyInstance(Locale.US);
-        format.setCurrency(Currency.getInstance("USD"));
-        format.setMinimumFractionDigits(fractionDigits);
-        format.setMaximumFractionDigits(fractionDigits);
-        return format.format(price);
-    }
-
     private void updatePercentChange(List<History> histories) {
         Double oldValue = histories.get(0).getValue();
         Double newValue = histories.get(histories.size() - 1).getValue();
@@ -248,8 +242,8 @@ public class WalletFragment extends Fragment implements WalletService.WalletServ
                 } else {
                     arrowUpDown.setImageResource(R.drawable.down_arrow);
                 }
-                minAmount.setText("MIN " + formatPrice(minValue));
-                maxAmount.setText("MAX " + formatPrice(maxValue));
+                minAmount.setText("MIN " + MyNumberFormatter.decimalPriceFormat(minValue));
+                maxAmount.setText("MAX " + MyNumberFormatter.decimalPriceFormat(maxValue));
             }
         });
 
@@ -258,13 +252,10 @@ public class WalletFragment extends Fragment implements WalletService.WalletServ
     private void displayCrypto(List<CryptoInWallet> cryptoList) {
         List<CryptoMerge> cryptoMergeList = new ArrayList<>();
         Map<Integer, Crypto> map = dbManager.getCryptoMap();
-        for (int i = 0; i < 20; i++) {
-            for (CryptoInWallet cryptoInWallet : cryptoList) {
-                CryptoMerge cryptoMerge = new CryptoMerge(map.get(cryptoInWallet.getId()), cryptoInWallet);
-                cryptoMergeList.add(cryptoMerge);
-            }
+        for (CryptoInWallet cryptoInWallet : cryptoList) {
+            CryptoMerge cryptoMerge = new CryptoMerge(map.get(cryptoInWallet.getId()), cryptoInWallet);
+            cryptoMergeList.add(cryptoMerge);
         }
-
 
         CryptoWalletAdapter mAdapter = new CryptoWalletAdapter(cryptoMergeList, this, getContext());
         recyclerView.setAdapter(mAdapter);
@@ -273,6 +264,29 @@ public class WalletFragment extends Fragment implements WalletService.WalletServ
     @Override
     public void onCryptoClick(int position) {
 
+    }
+
+    void displayTransactionsActivity() {
+        Intent intent = new Intent(getContext(), TransactionsActivity.class);
+        intent.putExtra("wallet", this.wallet);
+        for (int i = 0; i < 20; i++) {
+            Transaction transaction = new Transaction();
+            transaction.setAmount(12.1);
+            transaction.setCryptoId(1);
+            transaction.setTimestamp("2021-05-13T10:40:02.000Z");
+            transaction.setType("sell");
+            transaction.setUsd(44000d);
+            Transaction transaction2 = new Transaction();
+            transaction2.setAmount(12.1);
+            transaction2.setCryptoId(2);
+            transaction2.setTimestamp("2021-05-10T19:40:02.000Z");
+            transaction2.setType("buy");
+            transaction2.setUsd(49615616500.54d);
+            wallet.getTransactions().add(transaction);
+            wallet.getTransactions().add(transaction2);
+        }
+
+        startActivity(intent);
     }
 }
 
