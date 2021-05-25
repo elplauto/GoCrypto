@@ -34,8 +34,7 @@ public class LoginService {
         url = url.concat("/loginOrRegister?username=" + username + "&password=" + password);
         Log.d(TAG, "login url : " + url);
 
-        RequestBody formBody = new FormBody.Builder().build();
-        Request request = new Request.Builder().url(url).post(formBody).build();
+        Request request = new Request.Builder().url(url).build();
 
         client.newCall(request).enqueue(new Callback() {
             @Override
