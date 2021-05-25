@@ -1,4 +1,4 @@
-package fr.elplauto.gocrypto;
+package fr.elplauto.gocrypto.ui.transactions;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -11,15 +11,10 @@ import android.view.MenuItem;
 
 import java.util.List;
 
-import fr.elplauto.gocrypto.api.LeaderboardService;
+import fr.elplauto.gocrypto.R;
 import fr.elplauto.gocrypto.database.DBManager;
-import fr.elplauto.gocrypto.model.LeaderboardRaw;
 import fr.elplauto.gocrypto.model.Transaction;
-import fr.elplauto.gocrypto.model.TransactionsAdapter;
 import fr.elplauto.gocrypto.model.Wallet;
-import fr.elplauto.gocrypto.ui.leaderboard.LeaderboardAdapter;
-import fr.elplauto.gocrypto.ui.leaderboard.LeaderboardViewModel;
-import fr.elplauto.gocrypto.utils.SessionManager;
 
 public class TransactionsActivity extends AppCompatActivity implements TransactionsAdapter.OnTransactionClickListener{
 

@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-import fr.elplauto.gocrypto.LoginActivity;
+import fr.elplauto.gocrypto.ui.login.LoginActivity;
 import fr.elplauto.gocrypto.MainActivity;
 import fr.elplauto.gocrypto.R;
 

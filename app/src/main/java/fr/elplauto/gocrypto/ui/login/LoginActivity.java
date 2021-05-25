@@ -1,4 +1,4 @@
-package fr.elplauto.gocrypto;
+package fr.elplauto.gocrypto.ui.login;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import fr.elplauto.gocrypto.R;
 import fr.elplauto.gocrypto.api.LoginService;
 import fr.elplauto.gocrypto.model.LoginStatus;
 import fr.elplauto.gocrypto.utils.SessionManager;

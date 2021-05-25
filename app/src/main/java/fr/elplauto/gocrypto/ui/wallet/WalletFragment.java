@@ -29,13 +29,12 @@ import com.github.mikephil.charting.data.LineDataSet;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import fr.elplauto.gocrypto.CryptoDetailsActivity;
+import fr.elplauto.gocrypto.ui.cryptoDetails.CryptoDetailsActivity;
 import fr.elplauto.gocrypto.R;
-import fr.elplauto.gocrypto.TransactionsActivity;
+import fr.elplauto.gocrypto.ui.transactions.TransactionsActivity;
 import fr.elplauto.gocrypto.api.WalletService;
 import fr.elplauto.gocrypto.database.DBManager;
 import fr.elplauto.gocrypto.model.Crypto;

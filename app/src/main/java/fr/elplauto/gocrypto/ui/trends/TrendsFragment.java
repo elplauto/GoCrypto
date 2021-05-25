@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import fr.elplauto.gocrypto.CryptoDetailsActivity;
+import fr.elplauto.gocrypto.ui.cryptoDetails.CryptoDetailsActivity;
 import fr.elplauto.gocrypto.R;
 import fr.elplauto.gocrypto.api.CryptoService;
 import fr.elplauto.gocrypto.database.DBManager;

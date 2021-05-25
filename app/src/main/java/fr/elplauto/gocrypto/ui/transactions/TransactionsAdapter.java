@@ -1,4 +1,4 @@
-package fr.elplauto.gocrypto.model;
+package fr.elplauto.gocrypto.ui.transactions;
 
 import android.graphics.Color;
 import android.os.Build;
@@ -24,6 +24,8 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import fr.elplauto.gocrypto.R;
+import fr.elplauto.gocrypto.model.Crypto;
+import fr.elplauto.gocrypto.model.Transaction;
 import fr.elplauto.gocrypto.utils.MyNumberFormatter;
 
 public class TransactionsAdapter extends RecyclerView.Adapter<TransactionsAdapter.ViewHolder> {
@@ -31,7 +33,7 @@ public class TransactionsAdapter extends RecyclerView.Adapter<TransactionsAdapte
     private static final String TAG = "TransactionsAdapter";
     private OnTransactionClickListener OnTransactionClickListener;
     private List<Transaction> transactions = null;
-    Map<Integer,Crypto> cryptoMap;
+    Map<Integer, Crypto> cryptoMap;
 
     public TransactionsAdapter(List<Transaction> transactions, OnTransactionClickListener OnTransactionClickListener, Map<Integer,Crypto> cryptoMap) {
         this.transactions = transactions;

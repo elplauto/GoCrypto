@@ -1,4 +1,4 @@
-package fr.elplauto.gocrypto;
+package fr.elplauto.gocrypto.ui.cryptoDetails;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -31,6 +31,7 @@ import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
 
+import fr.elplauto.gocrypto.R;
 import fr.elplauto.gocrypto.api.CryptoDetailsService;
 import fr.elplauto.gocrypto.api.CryptoDetailsService.CryptoDetailsServiceCallbackListener;
 import fr.elplauto.gocrypto.model.Crypto;
