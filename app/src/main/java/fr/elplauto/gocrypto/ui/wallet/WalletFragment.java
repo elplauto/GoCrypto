@@ -261,8 +261,15 @@ public class WalletFragment extends Fragment implements WalletService.WalletServ
             cryptoMergeList.add(cryptoMerge);
         }
 
-
         this.cryptoMergeList = cryptoMergeList;
+        cryptoMergeList.sort(new Comparator<CryptoMerge>() {
+            @Override
+            public int compare(CryptoMerge o1, CryptoMerge o2) {
+                Double sum1 = o1.getCrypto().getPrice() * o1.getCryptoInWallet().getAmount();
+                Double sum2 = o2.getCrypto().getPrice() * o2.getCryptoInWallet().getAmount();
+                return sum2.compareTo(sum1);
+            }
+        });
         CryptoWalletAdapter mAdapter = new CryptoWalletAdapter(cryptoMergeList, this, getContext());
         recyclerView.setAdapter(mAdapter);
     }

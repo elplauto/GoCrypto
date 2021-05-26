@@ -3,6 +3,7 @@ package fr.elplauto.gocrypto.ui.trade;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
@@ -22,6 +23,7 @@ import com.squareup.picasso.Picasso;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import fr.elplauto.gocrypto.MainActivity;
 import fr.elplauto.gocrypto.R;
 import fr.elplauto.gocrypto.api.CryptoDetailsService;
 import fr.elplauto.gocrypto.api.CryptoTradeService;
@@ -156,7 +158,7 @@ public class TradeActivity extends AppCompatActivity implements CryptoDetailsSer
             public void run() {
                 CryptoDetailsService.getCryptoDetails(getApplicationContext(), cryptoServiceListener, cryptoId);
             }
-        }, 0, 20*1000);
+        }, 1000, 20*1000);
     }
 
     @Override
@@ -284,6 +286,8 @@ public class TradeActivity extends AppCompatActivity implements CryptoDetailsSer
                     Toast toast = Toast.makeText(getApplicationContext(), "Successful transaction !", Toast.LENGTH_LONG);
                     toast.getView().getBackground().setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN);
                     toast.show();
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(intent);
                 } else {
                     Toast toast = Toast.makeText(getApplicationContext(), "Error, please try again", Toast.LENGTH_LONG);
                     toast.getView().getBackground().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
