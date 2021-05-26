@@ -32,8 +32,6 @@
 
         </com.google.android.material.appbar.MaterialToolbar>
 
-
-
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -250,6 +248,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:scrollbars="vertical" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"/>
 
             </LinearLayout>
 

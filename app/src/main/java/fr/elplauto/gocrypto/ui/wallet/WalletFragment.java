@@ -256,11 +256,9 @@ public class WalletFragment extends Fragment implements WalletService.WalletServ
     private void displayCrypto(List<CryptoInWallet> cryptoList) {
         List<CryptoMerge> cryptoMergeList = new ArrayList<>();
         Map<Integer, Crypto> map = dbManager.getCryptoMap();
-        for (int i = 0; i < 20; i++) {
-            for (CryptoInWallet cryptoInWallet : cryptoList) {
-                CryptoMerge cryptoMerge = new CryptoMerge(map.get(cryptoInWallet.getId()), cryptoInWallet);
-                cryptoMergeList.add(cryptoMerge);
-            }
+        for (CryptoInWallet cryptoInWallet : cryptoList) {
+            CryptoMerge cryptoMerge = new CryptoMerge(map.get(cryptoInWallet.getId()), cryptoInWallet);
+            cryptoMergeList.add(cryptoMerge);
         }
 
 
@@ -282,23 +280,6 @@ public class WalletFragment extends Fragment implements WalletService.WalletServ
     void displayTransactionsActivity() {
         Intent intent = new Intent(getContext(), TransactionsActivity.class);
         intent.putExtra("wallet", this.wallet);
-        for (int i = 0; i < 20; i++) {
-            Transaction transaction = new Transaction();
-            transaction.setAmount(12.1);
-            transaction.setCryptoId(1);
-            transaction.setTimestamp("2021-05-13T10:40:02.000Z");
-            transaction.setType("sell");
-            transaction.setUsd(44000d);
-            Transaction transaction2 = new Transaction();
-            transaction2.setAmount(12.1);
-            transaction2.setCryptoId(2);
-            transaction2.setTimestamp("2021-05-10T19:40:02.000Z");
-            transaction2.setType("buy");
-            transaction2.setUsd(49615616500.54d);
-            wallet.getTransactions().add(transaction);
-            wallet.getTransactions().add(transaction2);
-        }
-
         startActivity(intent);
     }
 }

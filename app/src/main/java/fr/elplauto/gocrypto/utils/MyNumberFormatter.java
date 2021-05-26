@@ -24,6 +24,7 @@ public class MyNumberFormatter {
     }
 
     private static int getNbFractionDigit(Double number) {
+        if (number == 0d) return 2;
         int fractionDigits = 0;
         double inv = 1d / number;
         while (inv > 0.1) {

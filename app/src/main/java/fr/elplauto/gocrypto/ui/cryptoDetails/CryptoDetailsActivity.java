@@ -6,12 +6,14 @@ import androidx.core.content.ContextCompat;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -37,6 +39,7 @@ import fr.elplauto.gocrypto.api.CryptoDetailsService.CryptoDetailsServiceCallbac
 import fr.elplauto.gocrypto.model.Crypto;
 import fr.elplauto.gocrypto.model.History;
 import fr.elplauto.gocrypto.model.Wallet;
+import fr.elplauto.gocrypto.ui.trade.TradeActivity;
 import fr.elplauto.gocrypto.utils.MyNumberFormatter;
 
 public class CryptoDetailsActivity extends AppCompatActivity implements CryptoDetailsServiceCallbackListener {
@@ -54,6 +57,7 @@ public class CryptoDetailsActivity extends AppCompatActivity implements CryptoDe
     ImageView arrowUpDown;
     TextView percentChangeTextView;
     ImageView cryptoIcon;
+    Button tradeBtn;
     private SwipeRefreshLayout swipeContainer;
     CryptoDetailsServiceCallbackListener self = this;
 
@@ -76,6 +80,13 @@ public class CryptoDetailsActivity extends AppCompatActivity implements CryptoDe
         cryptoIcon = findViewById(R.id.cryptoIcon);
         min_price = findViewById(R.id.minPrice);
         max_price = findViewById(R.id.maxPrice);
+        tradeBtn = findViewById(R.id.tradeBtn);
+        tradeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadTradeActivity();
+            }
+        });
 
         btn_1h.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -249,5 +260,13 @@ public class CryptoDetailsActivity extends AppCompatActivity implements CryptoDe
             }
         });
 
+    }
+
+    void loadTradeActivity() {
+        Intent intent = new Intent(getApplicationContext(), TradeActivity.class);
+        Bundle b = new Bundle();
+        b.putInt("crypto_id", crypto.getId());
+        intent.putExtras(b);
+        startActivity(intent);
     }
 }
