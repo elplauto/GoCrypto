@@ -32,6 +32,9 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import fr.elplauto.gocrypto.api.WalletService;
+import fr.elplauto.gocrypto.model.CryptoInWallet;
+import fr.elplauto.gocrypto.model.Wallet;
 import fr.elplauto.gocrypto.ui.cryptoDetails.CryptoDetailsActivity;
 import fr.elplauto.gocrypto.R;
 import fr.elplauto.gocrypto.api.CryptoService;
@@ -39,8 +42,9 @@ import fr.elplauto.gocrypto.database.DBManager;
 import fr.elplauto.gocrypto.model.Crypto;
 import fr.elplauto.gocrypto.model.SortCryptoCriteriaEnum;
 import fr.elplauto.gocrypto.model.SortCryptoDirectionEnum;
+import fr.elplauto.gocrypto.utils.SessionManager;
 
-public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoClickListener, CryptoService.CryptoServiceCallbackListener {
+public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoClickListener, CryptoService.CryptoServiceCallbackListener, WalletService.WalletServiceCallbackListener {
 
     private static final String TAG = "TrendsFragment";
     private DBManager dbManager;
@@ -48,8 +52,10 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
     private RecyclerView recyclerView;
     final CryptoAdapter.OnCryptoClickListener onCryptoClickListener = this;
     private SwipeRefreshLayout swipeContainer;
-    private List<Crypto> cryptoList;
+    private List<Crypto> cryptoList = new ArrayList<>();
     private List<Crypto> displayedList;
+    private Wallet wallet = new Wallet();
+    SessionManager sessionManager;
     SearchView searchView;
     ImageView sortArrowImageView;
     TextView displayPercentTextView;
@@ -63,6 +69,8 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
         Toolbar toolbar = root.findViewById(R.id.toolbar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         setHasOptionsMenu(true);
+
+        sessionManager = SessionManager.getInstance(getContext());
 
         recyclerView = root.findViewById(R.id.recycler_view_trends);
         recyclerView.setHasFixedSize(true);
@@ -254,8 +262,49 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
         updatePercentChangeTextView();
 
         allCryptoTextView = root.findViewById(R.id.allCryptoTextView);
+        allCryptoTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getContext());
+                View bottomSheetView = LayoutInflater.from(getContext()).inflate(R.layout.bottom_action_sheet_all_crypto, (LinearLayout)root.findViewById(R.id.bottomSheetAllCryptoContainer));
+                bottomSheetDialog.setContentView(bottomSheetView);
+
+                Boolean displayAllCryptoPreference = getContext().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE).getBoolean("displayAllCrypto", true);
+
+                int colorBlue = ContextCompat.getColor(getContext(), R.color.blue);
+                if (displayAllCryptoPreference) {
+                    ((TextView) bottomSheetView.findViewById(R.id.allCrypto)).setTextColor(colorBlue);
+                } else {
+                    ((TextView) bottomSheetView.findViewById(R.id.cryptoInWallet)).setTextColor(colorBlue);
+                }
+
+                TextView allCrypto = bottomSheetDialog.findViewById(R.id.allCrypto);
+                allCrypto.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        updateAllCryptoDisplayPreference(true);
+                        displayCryptoList(applyAllFiltersToList(cryptoList));
+                        bottomSheetDialog.dismiss();
+                    }
+                });
+                TextView cryptoInWallet = bottomSheetDialog.findViewById(R.id.cryptoInWallet);
+                cryptoInWallet.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        updateAllCryptoDisplayPreference(false);
+                        displayCryptoList(applyAllFiltersToList(cryptoList));
+                        bottomSheetDialog.dismiss();
+                    }
+                });
+
+                bottomSheetDialog.show();
+            }
+        });
+        updateAllCryptoTextView();
 
         dbManager = new DBManager(getContext());
+
+        WalletService.getWallet(getContext(), this, sessionManager.getUsername());
 
         boolean dataLoaded = getContext().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE).getBoolean("dataLoaded", false);
         if (dataLoaded) {
@@ -273,7 +322,6 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
             editor.putBoolean("dataLoaded", true);
             editor.commit();
         }
-
 
         return root;
     }
@@ -431,10 +479,26 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
     }
 
     private List<Crypto> applyAllFiltersToList(List<Crypto> cryptoList) {
+        List<Crypto> firstFilteredList = filterCryptoListWithAllCryptoDisplayPref(cryptoList);
         String filter = searchView != null ? searchView.getQuery().toString() : "";
-        List<Crypto> filteredList = filterCryptoListWithSearch(cryptoList, filter);
-        List<Crypto> sortedList = sortCryptoList(filteredList);
+        List<Crypto> secondFilteredList = filterCryptoListWithSearch(firstFilteredList, filter);
+        List<Crypto> sortedList = sortCryptoList(secondFilteredList);
         return sortedList;
+    }
+
+    private List<Crypto> filterCryptoListWithAllCryptoDisplayPref(List<Crypto> cryptoList) {
+        boolean displayAllCrypto = getContext().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE).getBoolean("displayAllCrypto", true);
+        List<Crypto> result = new ArrayList<>();
+        if (displayAllCrypto) {
+            result = cryptoList;
+        } else {
+            for (Crypto crypto : cryptoList) {
+                if (wallet.containsCrypto(crypto.getId())) {
+                    result.add(crypto);
+                }
+            }
+        }
+        return result;
     }
 
     private List<Crypto> filterCryptoListWithSearch(List<Crypto> cryptoList, String filter) {
@@ -482,6 +546,22 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
         updatePercentChangeTextView();
     }
 
+    private void updateAllCryptoDisplayPreference(Boolean displayAllCryptoPref) {
+        SharedPreferences.Editor editor = getContext().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE).edit();
+        editor.putBoolean("displayAllCrypto", displayAllCryptoPref);
+        editor.apply();
+        updateAllCryptoTextView();
+    }
+
+    private void updateAllCryptoTextView() {
+        boolean displayAllCrypto = getContext().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE).getBoolean("displayAllCrypto", true);
+        if (displayAllCrypto) {
+            allCryptoTextView.setText("All Cryptocurrencies");
+        } else {
+            allCryptoTextView.setText("Cryptocurrencies in Wallet");
+        }
+    }
+
     private void updatePercentChangeTextView() {
         String text = "";
         String percentChangePreference = getContext().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE).getString("percentChange", "1h");
@@ -518,6 +598,18 @@ public class TrendsFragment extends Fragment implements CryptoAdapter.OnCryptoCl
                 List<Crypto> filteredList = applyAllFiltersToList(cryptoList);
                 displayCryptoList(filteredList);
                 swipeContainer.setRefreshing(false);
+            }
+        });
+    }
+
+    @Override
+    public void onWalletServiceCallback(Wallet wallet) {
+        this.wallet = wallet;
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                List<Crypto> filteredList = applyAllFiltersToList(cryptoList);
+                displayCryptoList(filteredList);
             }
         });
     }

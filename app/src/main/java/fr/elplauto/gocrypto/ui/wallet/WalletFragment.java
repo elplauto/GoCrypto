@@ -223,6 +223,9 @@ public class WalletFragment extends Fragment implements WalletService.WalletServ
     }
 
     private void updatePercentChange(List<History> histories) {
+        if (histories.size() == 0) {
+            histories.add(new History("",10d));
+        }
         Double oldValue = histories.get(0).getValue();
         Double newValue = histories.get(histories.size() - 1).getValue();
         final double percentChange = ((oldValue / newValue) - 1) * 100;

@@ -13,7 +13,7 @@ public class Wallet implements Serializable {
     private Double usd;
     @SerializedName("crypto")
     @Expose
-    private List<CryptoInWallet> crypto = null;
+    private List<CryptoInWallet> crypto = new ArrayList<>();
     @SerializedName("history_1h")
     @Expose
     private List<History> history1h = null;
@@ -27,6 +27,7 @@ public class Wallet implements Serializable {
     public Wallet() {
         this.history1h = new ArrayList<>();
         this.history7d = new ArrayList<>();
+        this.transactions = new ArrayList<>();
     }
 
     public Double getUsd() {
@@ -67,5 +68,16 @@ public class Wallet implements Serializable {
 
     public void setTransactions(List<Transaction> transactions) {
         this.transactions = transactions;
+    }
+
+    public boolean containsCrypto(Integer id) {
+        boolean res = false;
+        for (CryptoInWallet cryptoInWallet : crypto) {
+            if (cryptoInWallet.getId().equals(id)) {
+                res = true;
+                break;
+            }
+        }
+        return res;
     }
 }
