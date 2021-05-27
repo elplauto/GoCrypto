@@ -151,14 +151,6 @@ public class TradeActivity extends AppCompatActivity implements CryptoDetailsSer
 
         Bundle b = getIntent().getExtras();
         cryptoId = b.getInt("crypto_id");
-
-        timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                CryptoDetailsService.getCryptoDetails(getApplicationContext(), cryptoServiceListener, cryptoId);
-            }
-        }, 1000, 20*1000);
     }
 
     @Override
@@ -194,6 +186,14 @@ public class TradeActivity extends AppCompatActivity implements CryptoDetailsSer
                 availableTextView.setText("Available: " + MyNumberFormatter.formatNumber(availableCrypto) + " " + cryptoSymbol);
             }
         });
+        
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                CryptoDetailsService.getCryptoDetails(getApplicationContext(), cryptoServiceListener, cryptoId);
+            }
+        }, 0, 20*1000);
     }
 
     @Override
