@@ -249,7 +249,7 @@ public class TradeActivity extends AppCompatActivity implements CryptoDetailsSer
             if (buy) {
                 nb = wallet.getUsd();
             } else {
-                nb = availableCrypto / crypto.getPrice();
+                nb = availableCrypto * crypto.getPrice();
             }
         } else {
             symb = crypto.getSymbol();
