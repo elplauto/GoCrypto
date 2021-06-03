@@ -65,6 +65,7 @@ public class WalletFragment extends Fragment implements WalletService.WalletServ
     Button btnTransaction;
     List<CryptoMerge> cryptoMergeList;
     TextView usdInWallet;
+    TextView usdInWallet2;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -80,6 +81,7 @@ public class WalletFragment extends Fragment implements WalletService.WalletServ
         maxAmount = root.findViewById(R.id.maxAmount);
         minAmount = root.findViewById(R.id.minAmount);
         usdInWallet = root.findViewById(R.id.usdInWallet);
+        usdInWallet2 = root.findViewById(R.id.usdInWallet2);
         btnTransaction = root.findViewById(R.id.btn_transactions);
         btnTransaction.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -194,6 +196,7 @@ public class WalletFragment extends Fragment implements WalletService.WalletServ
                 wallet_total_amount.setText(formattedPrice);
                 drawChart(wallet);
                 usdInWallet.setText(MyNumberFormatter.formatNumber(wallet.getUsd()));
+                usdInWallet2.setText(MyNumberFormatter.decimalPriceFormat(wallet.getUsd()));
                 displayCrypto(wallet.getCrypto());
                 swipeContainer.setRefreshing(false);
             }

@@ -12,13 +12,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
 
-import java.text.NumberFormat;
-import java.util.Currency;
 import java.util.List;
-import java.util.Locale;
 
 import fr.elplauto.gocrypto.R;
-import fr.elplauto.gocrypto.model.Crypto;
 import fr.elplauto.gocrypto.model.CryptoMerge;
 import fr.elplauto.gocrypto.utils.MyNumberFormatter;
 
@@ -49,8 +45,8 @@ public class CryptoWalletAdapter extends RecyclerView.Adapter<CryptoWalletAdapte
         CryptoMerge cryptoMerge = cryptoList.get(position);
         holder.textViewCryptoName.setText(cryptoMerge.getCrypto().getName());
         holder.textViewCryptoShortName.setText(cryptoMerge.getCrypto().getSymbol());
-        String unitPrice = MyNumberFormatter.decimalPriceFormat(cryptoMerge.getCrypto().getPrice());
-        holder.textViewUnitPrice.setText(unitPrice);
+        String amountInUsd = MyNumberFormatter.decimalPriceFormat(cryptoMerge.getCrypto().getPrice() * cryptoMerge.getCryptoInWallet().getAmount());
+        holder.textViewAmountInUsd.setText(amountInUsd);
         String amount = MyNumberFormatter.formatNumber(cryptoMerge.getCryptoInWallet().getAmount());
         holder.textViewAmount.setText(amount);
 
@@ -67,7 +63,7 @@ public class CryptoWalletAdapter extends RecyclerView.Adapter<CryptoWalletAdapte
         private final TextView textViewCryptoName;
         private final TextView textViewCryptoShortName;
         private final TextView textViewAmount;
-        private final TextView textViewUnitPrice;
+        private final TextView textViewAmountInUsd;
         private final ImageView imageViewIconCrypto;
 
         private OnCryptoWalletClickListener OnCryptoWalletClickListener;
@@ -77,7 +73,7 @@ public class CryptoWalletAdapter extends RecyclerView.Adapter<CryptoWalletAdapte
             textViewCryptoName = view.findViewById(R.id.textViewCryptoName);
             textViewCryptoShortName = view.findViewById(R.id.textViewCryptoShortName);
             textViewAmount = view.findViewById(R.id.textViewAmount);
-            textViewUnitPrice = view.findViewById(R.id.textViewUnitPrice);
+            textViewAmountInUsd = view.findViewById(R.id.textViewAmountInUsd);
             imageViewIconCrypto = view.findViewById(R.id.imageViewIconCrypto);
             this.OnCryptoWalletClickListener = OnCryptoWalletClickListener;
             itemView.setOnClickListener(this);
