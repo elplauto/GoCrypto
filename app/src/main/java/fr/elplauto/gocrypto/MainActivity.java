@@ -39,4 +39,8 @@ public class MainActivity extends AppCompatActivity {
         editor.commit();
     }
 
+    @Override
+    public void onBackPressed() {
+        //back button disabled
+    }
 }

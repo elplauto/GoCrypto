@@ -86,7 +86,7 @@ public class TradeActivity extends AppCompatActivity implements CryptoDetailsSer
             @Override
             public void onClick(View v) {
                 buy = !buy;
-                updateAllDisplay();
+                updateAllDisplay(false);
             }
         });
         symbolToUse = findViewById(R.id.symbolToUse);
@@ -105,8 +105,7 @@ public class TradeActivity extends AppCompatActivity implements CryptoDetailsSer
             @Override
             public void onClick(View v) {
                 usdInput = !usdInput;
-                selectedAmount.setText("0");
-                updateAllDisplay();
+                updateAllDisplay(true);
             }
         });
 
@@ -125,7 +124,7 @@ public class TradeActivity extends AppCompatActivity implements CryptoDetailsSer
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-               updateAllDisplay();
+               updateAllDisplay(false);
             }
 
             @Override
@@ -164,7 +163,7 @@ public class TradeActivity extends AppCompatActivity implements CryptoDetailsSer
                 String unitPrice = MyNumberFormatter.decimalPriceFormat(crypto.getPrice());
                 conversion.setText(1 + crypto.getSymbol() + " = " + unitPrice);
                 symbol.setText(crypto.getSymbol());
-                updateAllDisplay();
+                updateAllDisplay(false);
             }
         });
     }
@@ -220,7 +219,7 @@ public class TradeActivity extends AppCompatActivity implements CryptoDetailsSer
         });
     }
 
-    private void updateAllDisplay() {
+    private void updateAllDisplay(boolean switchCurrency) {
         updateTitle();
         String action = buy ? "Sell" : "Buy";
         textViewSwitchTrade.setText(action);
@@ -261,6 +260,7 @@ public class TradeActivity extends AppCompatActivity implements CryptoDetailsSer
         }
         availableTextView.setText("Available: " + MyNumberFormatter.formatNumber(nb) + " " + symb);
         maxAvailable = nb;
+        Double selectedAmountCopy = Double.parseDouble(selectedAmount.getText().toString());
         selectedAmount.setFilters(new InputFilter[]{ new InputFilterMinMax(0, nb)});
 
         if(doubleAmount > maxAvailable) {
@@ -274,6 +274,24 @@ public class TradeActivity extends AppCompatActivity implements CryptoDetailsSer
         } else {
             Double converted = crypto.getPrice() * doubleAmount;
             convertedAmount.setText("= " + MyNumberFormatter.formatNumber(converted) + " USD");
+        }
+
+        if (switchCurrency) {
+            if (selectedAmount.getText() == null || selectedAmount.getText().toString().equals("")) {
+                selectedAmount.setText("0");
+            } else {
+                Double convertedAmount;
+                if (usdInput) {
+                    convertedAmount = selectedAmountCopy * crypto.getPrice();
+                } else {
+                    convertedAmount = selectedAmountCopy / crypto.getPrice();
+                    selectedAmount.setText(convertedAmount.toString());
+                }
+                if (convertedAmount > maxAvailable) {
+                    convertedAmount = maxAvailable;
+                }
+                selectedAmount.setText(convertedAmount.toString());
+            }
         }
     }
 
